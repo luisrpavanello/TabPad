@@ -16,6 +16,9 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
+    env:
+      PORT: 5173
+      BASE_PATH: /
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -33,7 +36,7 @@ jobs:
       - name: Build editor
         run: |
           cd artifacts/editor
-          PORT=5173 BASE_PATH=/ pnpm run build
+          pnpm run build
       - name: Setup Pages
         uses: actions/configure-pages@v4
       - name: Upload artifact
