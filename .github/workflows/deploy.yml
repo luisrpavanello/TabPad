@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       PORT: 5173
-      BASE_PATH: /
+      BASE_PATH: /TabPad/
     steps:
       - name: Checkout
         uses: actions/checkout@v4
