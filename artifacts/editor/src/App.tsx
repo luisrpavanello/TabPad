@@ -1,6 +1,11 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { FolderOpen, Save, FilePlus, X, Moon, Sun } from "lucide-react";
 
+const generateId = (): string =>
+  typeof crypto.randomUUID === "function"
+    ? crypto.randomUUID()
+    : Math.random().toString(36).slice(2) + Date.now().toString(36);
+
 interface Tab {
   id: string;
   title: string;
@@ -47,7 +52,7 @@ function ThemeProvider({ children }: { children: React.ReactNode }) {
 const ThemeContext = React.createContext<{ theme: "light" | "dark"; toggleTheme: () => void }>({ theme: "light", toggleTheme: () => {} });
 
 function Editor() {
-  const [tabs, setTabs] = useState<Tab[]>([{ id: crypto.randomUUID(), title: "Sem título", content: "", isDirty: false, fileHandle: null }]);
+  const [tabs, setTabs] = useState<Tab[]>([{ id: generateId(), title: "Sem título", content: "", isDirty: false, fileHandle: null }]);
   const [activeTabId, setActiveTabId] = useState<string>(tabs[0].id);
   const { theme, toggleTheme } = React.useContext(ThemeContext);
 
@@ -64,7 +69,7 @@ function Editor() {
   };
 
   const newTab = useCallback(() => {
-    const newId = crypto.randomUUID();
+    const newId = generateId();
     setTabs((prev) => [...prev, { id: newId, title: "Sem título", content: "", isDirty: false, fileHandle: null }]);
     setActiveTabId(newId);
   }, []);
@@ -80,7 +85,7 @@ function Editor() {
     setTabs((prev) => {
       const filtered = prev.filter((t) => t.id !== id);
       if (filtered.length === 0) {
-        const newId = crypto.randomUUID();
+        const newId = generateId();
         setActiveTabId(newId);
         return [{ id: newId, title: "Sem título", content: "", isDirty: false, fileHandle: null }];
       }
@@ -104,7 +109,7 @@ function Editor() {
         if (currentTab && currentTab.title === "Sem título" && !currentTab.isDirty && currentTab.content === "") {
           updateTab(activeTabId, { title: file.name, content, isDirty: false, fileHandle });
         } else {
-          const newId = crypto.randomUUID();
+          const newId = generateId();
           setTabs((prev) => [...prev, { id: newId, title: file.name, content, isDirty: false, fileHandle }]);
           setActiveTabId(newId);
         }
@@ -123,7 +128,7 @@ function Editor() {
         if (currentTab && currentTab.title === "Sem título" && !currentTab.isDirty && currentTab.content === "") {
           updateTab(activeTabId, { title: file.name, content, isDirty: false, fileHandle: null });
         } else {
-          const newId = crypto.randomUUID();
+          const newId = generateId();
           setTabs((prev) => [...prev, { id: newId, title: file.name, content, isDirty: false, fileHandle: null }]);
           setActiveTabId(newId);
         }
