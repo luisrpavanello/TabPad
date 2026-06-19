@@ -9,6 +9,18 @@
     <meta name="description" content="TabPad is a modern tab‑based text editor. Use it as a simple note pad, bloco de notas online, or advanced editor. Free, fast, and clean." />
     
     <meta name="robots" content="index, follow" />
+
+    <script>
+      if (location.protocol === "http:" && location.hostname !== "localhost") {
+        location.replace(
+          "https://" +
+            location.host +
+            location.pathname +
+            location.search +
+            location.hash,
+        );
+      }
+    </script>
     
     <!-- Open Graph -->
     <meta property="og:title" content="TabPad – Note Pad & Bloco de Notas Online" />

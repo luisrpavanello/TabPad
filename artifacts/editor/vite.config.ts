@@ -6,25 +6,12 @@ import runtimeErrorOverlay from "@replit/vite-plugin-runtime-error-modal";
 
 const isProd = process.env.NODE_ENV === "production";
 
-/**
- * PORT
- * - usado apenas no dev server
- * - fallback seguro para não quebrar build
- */
 const port = process.env.PORT ? Number(process.env.PORT) : 5173;
 
-/**
- * BASE_PATH
- * - obrigatório para GitHub Pages funcionar corretamente
- * - fallback seguro para build local/dev
- */
 const basePath =
   process.env.BASE_PATH ||
   (isProd ? "/" : "/");
 
-/**
- * Plugins condicionais (Replit only)
- */
 const extraPlugins =
   process.env.NODE_ENV !== "production" &&
   process.env.REPL_ID !== undefined
@@ -42,14 +29,12 @@ const extraPlugins =
 
 export default defineConfig({
   base: basePath,
-
   plugins: [
     react(),
     tailwindcss(),
     runtimeErrorOverlay(),
     ...extraPlugins,
   ],
-
   resolve: {
     alias: {
       "@": path.resolve(import.meta.dirname, "src"),
@@ -62,14 +47,11 @@ export default defineConfig({
     },
     dedupe: ["react", "react-dom"],
   },
-
   root: path.resolve(import.meta.dirname),
-
   build: {
     outDir: path.resolve(import.meta.dirname, "dist/public"),
     emptyOutDir: true,
   },
-
   server: {
     port,
     strictPort: true,
@@ -79,7 +61,6 @@ export default defineConfig({
       strict: true,
     },
   },
-
   preview: {
     port,
     host: "0.0.0.0",
