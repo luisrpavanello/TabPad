@@ -25,21 +25,40 @@ pnpm install
 
 ## Environment Variables
 
-Create a `.env` file in the root directory (or in each package if needed) with the following variables:
+Keep local and production configuration separate. Do not change source code when switching between your Mac and the online deployment.
 
-| Variable | Description | Example |
-|----------|-------------|---------|
-| `DATABASE_URL` | PostgreSQL connection string | `postgresql://user:pass@localhost:5432/db` |
-| `PORT` | Port for the frontend dev server | `5173` |
-| `BASE_PATH` | Base path for the frontend (usually `/`) | `/` |
-| `NODE_ENV` | Environment (development/production) | `development` |
+### Local development
 
-For the API server, you may also need:
+Create a local `.env` file in the repository root. This file is ignored by git and should contain only your local values:
 
 ```env
-PORT=5000
-DATABASE_URL=postgresql://...
+DATABASE_URL=postgresql://postgres:mysecretpassword@localhost:5432/tabpad
+API_PORT=5001
+EDITOR_PORT=5173
+MOCKUP_PORT=5174
+BASE_PATH=/
 ```
+
+Notes:
+
+- `DATABASE_URL` must point to your local or development database.
+- `API_PORT` is used by the Express API during local development.
+- `EDITOR_PORT` is used by the main Vite editor during local development.
+- `MOCKUP_PORT` is used by the mockup sandbox during local development.
+- The API still supports `PORT`, but for local development prefer `API_PORT` so it does not conflict with frontend tooling.
+
+### Production
+
+In production, configure environment variables in the hosting provider dashboard. The server should receive:
+
+```env
+NODE_ENV=production
+PORT=<port provided by the host>
+DATABASE_URL=<production database URL>
+BASE_PATH=/
+```
+
+Do not commit production secrets to `.env`, README, or source files.
 
 ## Running the Project
 
@@ -59,38 +78,49 @@ This pushes the schema to your database (development only).
 pnpm --filter @workspace/api-server run dev
 ```
 
-The API server will start on port `5000` by default (configurable via `PORT` env).
+The API server loads the root `.env` automatically and starts on `API_PORT`. If neither `PORT` nor `API_PORT` is set locally, it falls back to `5001`.
 
 ### 3. Run the Frontend Editor
 
 In a separate terminal:
 
 ```bash
-PORT=5173 BASE_PATH=/ pnpm --filter @workspace/editor run dev
+pnpm --filter @workspace/editor run dev
 ```
 
 The editor will be available at `http://localhost:5173`.
 
-> **Note**: Both `PORT` and `BASE_PATH` are required for the editor Vite configuration.
+If you set a different `EDITOR_PORT` in `.env`, open that port instead.
+
+### 4. Run the Mockup Sandbox
+
+In another terminal, if needed:
+
+```bash
+pnpm --filter @workspace/mockup-sandbox run dev
+```
+
+The sandbox uses `MOCKUP_PORT` from `.env` or falls back to `5174`.
 
 ## Available Scripts
 
 From the root directory, you can run:
 
-| Command | Description |
-|---------|-------------|
-| `pnpm run typecheck` | Run TypeScript type checking across all packages |
-| `pnpm run build` | Build all packages (runs typecheck first) |
-| `pnpm run typecheck:libs` | Typecheck only shared libraries (`lib/*`) |
+| Command                   | Description                                      |
+| ------------------------- | ------------------------------------------------ |
+| `pnpm run typecheck`      | Run TypeScript type checking across all packages |
+| `pnpm run build`          | Build all packages (runs typecheck first)        |
+| `pnpm run typecheck:libs` | Typecheck only shared libraries (`lib/*`)        |
 
 ### Package-specific scripts
 
-| Package | Command | Purpose |
-|---------|---------|---------|
-| `@workspace/editor` | `pnpm --filter @workspace/editor run dev` | Start frontend dev server |
-| `@workspace/api-server` | `pnpm --filter @workspace/api-server run dev` | Start API server |
-| `@workspace/db` | `pnpm --filter @workspace/db run push` | Push schema changes to DB |
-| `@workspace/api-spec` | `pnpm --filter @workspace/api-spec run codegen` | Regenerate API hooks and Zod schemas from OpenAPI spec |
+| Package                     | Command                                           | Purpose                                                |
+| --------------------------- | ------------------------------------------------- | ------------------------------------------------------ |
+| `@workspace/editor`         | `pnpm --filter @workspace/editor run dev`         | Start frontend dev server                              |
+| `@workspace/api-server`     | `pnpm --filter @workspace/api-server run dev`     | Start API server                                       |
+| `@workspace/mockup-sandbox` | `pnpm --filter @workspace/mockup-sandbox run dev` | Start mockup sandbox                                   |
+| `@workspace/db`             | `pnpm --filter @workspace/db run push`            | Push schema changes to DB                              |
+| `@workspace/api-spec`       | `pnpm --filter @workspace/api-spec run codegen`   | Regenerate API hooks and Zod schemas from OpenAPI spec |
 
 ## Project Structure
 
@@ -114,15 +144,15 @@ From the root directory, you can run:
 
 ## Technology Stack
 
-| Area | Technologies |
-|------|--------------|
-| **Monorepo** | pnpm workspaces with catalog dependencies |
-| **Frontend** | React 19, Vite 7, Tailwind CSS 4, shadcn/ui |
-| **Backend** | Express 5, Drizzle ORM, PostgreSQL |
-| **Type Safety** | TypeScript 5.9, Zod 4 (via catalog), drizzle-zod |
+| Area               | Technologies                                       |
+| ------------------ | -------------------------------------------------- |
+| **Monorepo**       | pnpm workspaces with catalog dependencies          |
+| **Frontend**       | React 19, Vite 7, Tailwind CSS 4, shadcn/ui        |
+| **Backend**        | Express 5, Drizzle ORM, PostgreSQL                 |
+| **Type Safety**    | TypeScript 5.9, Zod 4 (via catalog), drizzle-zod   |
 | **API Generation** | OpenAPI 3, Orval (React Query hooks & Zod schemas) |
-| **Build Tool** | esbuild (CJS bundles for API server) |
-| **Logging** | Pino + pino-http |
+| **Build Tool**     | esbuild (CJS bundles for API server)               |
+| **Logging**        | Pino + pino-http                                   |
 
 ## Development Workflow
 
@@ -141,6 +171,8 @@ pnpm run build
 ```
 
 This will typecheck and build all packages.
+
+For deployment, let the hosting provider set `NODE_ENV=production`, `PORT`, and `DATABASE_URL`. Local-only variables such as `API_PORT`, `EDITOR_PORT`, and `MOCKUP_PORT` are not required in production.
 
 ### Adding a New API Endpoint
 
@@ -172,13 +204,21 @@ This will typecheck and build all packages.
 
 The root `package.json` forces pnpm. Ensure you are using pnpm and not npm or yarn.
 
-### Missing `PORT` or `BASE_PATH` for editor
+### Missing `PORT` on the API server
 
-The editor's Vite config requires both environment variables. Set them before running:
+Production requires `PORT` because most hosts inject the port at runtime. Local development can use `API_PORT` or the default `5001`.
 
-```bash
-PORT=5173 BASE_PATH=/ pnpm --filter @workspace/editor run dev
+If you see this in production:
+
+```text
+PORT environment variable is required in production but was not provided.
 ```
+
+Set `PORT` in your hosting provider settings.
+
+### Local `.env` is not being used
+
+The API server script loads the root `.env` automatically. Frontend packages use local defaults and can be overridden with `EDITOR_PORT`, `MOCKUP_PORT`, and `BASE_PATH`.
 
 ### Database connection issues
 

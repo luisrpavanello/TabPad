@@ -1,17 +1,16 @@
-import { defineConfig } from "vite";
+import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import path from "path";
 import runtimeErrorOverlay from "@replit/vite-plugin-runtime-error-modal";
 import { mockupPreviewPlugin } from "./mockupPreviewPlugin";
 
-const rawPort = process.env.PORT;
-
-if (!rawPort) {
-  throw new Error(
-    "PORT environment variable is required but was not provided.",
-  );
-}
+const workspaceRoot = path.resolve(import.meta.dirname, "../..");
+const mode =
+  process.env.NODE_ENV === "production" ? "production" : "development";
+const env = { ...loadEnv(mode, workspaceRoot, ""), ...process.env };
+const isProd = env.NODE_ENV === "production";
+const rawPort = env.MOCKUP_PORT ?? (isProd ? env.PORT : undefined) ?? "5174";
 
 const port = Number(rawPort);
 
@@ -19,13 +18,7 @@ if (Number.isNaN(port) || port <= 0) {
   throw new Error(`Invalid PORT value: "${rawPort}"`);
 }
 
-const basePath = process.env.BASE_PATH;
-
-if (!basePath) {
-  throw new Error(
-    "BASE_PATH environment variable is required but was not provided.",
-  );
-}
+const basePath = env.BASE_PATH ?? "/";
 
 export default defineConfig({
   base: basePath,
@@ -34,8 +27,7 @@ export default defineConfig({
     react(),
     tailwindcss(),
     runtimeErrorOverlay(),
-    ...(process.env.NODE_ENV !== "production" &&
-    process.env.REPL_ID !== undefined
+    ...(env.NODE_ENV !== "production" && env.REPL_ID !== undefined
       ? [
           await import("@replit/vite-plugin-cartographer").then((m) =>
             m.cartographer({

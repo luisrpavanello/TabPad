@@ -1,9 +1,12 @@
 // artifacts/editor/src/components/Layout.tsx
+import { Users } from "lucide-react";
 import { Link, Outlet } from "react-router-dom";
+import { useOnlineUsers } from "../hooks/useOnlineUsers";
 import { useTheme } from "../hooks/useTheme";
 
 export function Layout() {
   const { theme, toggleTheme } = useTheme();
+  const onlineUsers = useOnlineUsers();
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
@@ -14,12 +17,27 @@ export function Layout() {
             <span className="font-bold text-lg text-primary">TabPad</span>
           </Link>
           <nav className="ml-auto flex items-center space-x-4">
-            <Link to="/" className="text-sm font-medium hover:text-primary transition-colors">
+            <Link
+              to="/"
+              className="text-sm font-medium hover:text-primary transition-colors"
+            >
               Editor
             </Link>
-            <Link to="/contact" className="text-sm font-medium hover:text-primary transition-colors">
+            <Link
+              to="/contact"
+              className="text-sm font-medium hover:text-primary transition-colors"
+            >
               Contact
             </Link>
+            <div
+              className="flex h-8 items-center gap-1.5 rounded-sm border border-border bg-muted/40 px-2 text-xs text-muted-foreground"
+              title="Pessoas online agora"
+              aria-label={`Pessoas online agora: ${onlineUsers ?? "carregando"}`}
+            >
+              <span className="h-2 w-2 rounded-full bg-emerald-500" />
+              <Users size={14} aria-hidden="true" />
+              <span>{onlineUsers ?? "--"} online</span>
+            </div>
             <button
               onClick={toggleTheme}
               className="p-1.5 rounded-sm text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
@@ -40,7 +58,15 @@ export function Layout() {
       <footer className="border-t border-border py-4 text-center text-sm text-muted-foreground">
         <div className="container mx-auto px-4">
           <p>© {new Date().getFullYear()} TabPad. All rights reserved.</p>
-          <p>Contact: <a href="mailto:contato@tabpad.online" className="hover:text-primary">contato@tabpad.online</a></p>
+          <p>
+            Contact:{" "}
+            <a
+              href="mailto:contato@tabpad.online"
+              className="hover:text-primary"
+            >
+              contato@tabpad.online
+            </a>
+          </p>
         </div>
       </footer>
     </div>

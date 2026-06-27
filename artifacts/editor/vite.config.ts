@@ -1,20 +1,21 @@
-import { defineConfig } from "vite";
+import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import path from "path";
 import runtimeErrorOverlay from "@replit/vite-plugin-runtime-error-modal";
 
-const isProd = process.env.NODE_ENV === "production";
-
-const port = process.env.PORT ? Number(process.env.PORT) : 5173;
-
-const basePath =
-  process.env.BASE_PATH ||
-  (isProd ? "/" : "/");
+const workspaceRoot = path.resolve(import.meta.dirname, "../..");
+const mode =
+  process.env.NODE_ENV === "production" ? "production" : "development";
+const env = { ...loadEnv(mode, workspaceRoot, ""), ...process.env };
+const isProd = env.NODE_ENV === "production";
+const port = Number(env.EDITOR_PORT ?? (isProd ? env.PORT : undefined) ?? 5173);
+const apiProxyTarget =
+  env.API_PROXY_TARGET ?? `http://localhost:${env.API_PORT ?? 5001}`;
+const basePath = env.BASE_PATH || "/";
 
 const extraPlugins =
-  process.env.NODE_ENV !== "production" &&
-  process.env.REPL_ID !== undefined
+  env.NODE_ENV !== "production" && env.REPL_ID !== undefined
     ? [
         await import("@replit/vite-plugin-cartographer").then((m) =>
           m.cartographer({
@@ -29,12 +30,7 @@ const extraPlugins =
 
 export default defineConfig({
   base: basePath,
-  plugins: [
-    react(),
-    tailwindcss(),
-    runtimeErrorOverlay(),
-    ...extraPlugins,
-  ],
+  plugins: [react(), tailwindcss(), runtimeErrorOverlay(), ...extraPlugins],
   resolve: {
     alias: {
       "@": path.resolve(import.meta.dirname, "src"),
@@ -42,7 +38,7 @@ export default defineConfig({
         import.meta.dirname,
         "..",
         "..",
-        "attached_assets"
+        "attached_assets",
       ),
     },
     dedupe: ["react", "react-dom"],
@@ -59,6 +55,12 @@ export default defineConfig({
     allowedHosts: true,
     fs: {
       strict: true,
+    },
+    proxy: {
+      "/api": {
+        target: apiProxyTarget,
+        changeOrigin: true,
+      },
     },
   },
   preview: {

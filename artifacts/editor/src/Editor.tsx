@@ -17,14 +17,22 @@ interface Tab {
 
 export default function Editor() {
   const [tabs, setTabs] = useState<Tab[]>([
-    { id: generateId(), title: "Sem título", content: "", isDirty: false, fileHandle: null },
+    {
+      id: generateId(),
+      title: "Sem título",
+      content: "",
+      isDirty: false,
+      fileHandle: null,
+    },
   ]);
   const [activeTabId, setActiveTabId] = useState<string>(tabs[0].id);
 
   const activeTab = tabs.find((t) => t.id === activeTabId);
 
   const updateTab = useCallback((id: string, updates: Partial<Tab>) => {
-    setTabs((prev) => prev.map((t) => (t.id === id ? { ...t, ...updates } : t)));
+    setTabs((prev) =>
+      prev.map((t) => (t.id === id ? { ...t, ...updates } : t)),
+    );
   }, []);
 
   const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -37,7 +45,13 @@ export default function Editor() {
     const newId = generateId();
     setTabs((prev) => [
       ...prev,
-      { id: newId, title: "Sem título", content: "", isDirty: false, fileHandle: null },
+      {
+        id: newId,
+        title: "Sem título",
+        content: "",
+        isDirty: false,
+        fileHandle: null,
+      },
     ]);
     setActiveTabId(newId);
   }, []);
@@ -46,7 +60,10 @@ export default function Editor() {
     (id: string, e?: React.MouseEvent) => {
       e?.stopPropagation();
       const tabToClose = tabs.find((t) => t.id === id);
-      if (tabToClose?.isDirty && !window.confirm(`Save changes to ${tabToClose.title}?`)) {
+      if (
+        tabToClose?.isDirty &&
+        !window.confirm(`Save changes to ${tabToClose.title}?`)
+      ) {
         return;
       }
       setTabs((prev) => {
@@ -54,7 +71,15 @@ export default function Editor() {
         if (filtered.length === 0) {
           const newId = generateId();
           setActiveTabId(newId);
-          return [{ id: newId, title: "Sem título", content: "", isDirty: false, fileHandle: null }];
+          return [
+            {
+              id: newId,
+              title: "Sem título",
+              content: "",
+              isDirty: false,
+              fileHandle: null,
+            },
+          ];
         }
         if (activeTabId === id) {
           setActiveTabId(filtered[Math.max(0, filtered.length - 1)].id);
@@ -62,23 +87,48 @@ export default function Editor() {
         return filtered;
       });
     },
-    [tabs, activeTabId]
+    [tabs, activeTabId],
   );
 
   const openFile = useCallback(async () => {
     if ("showOpenFilePicker" in window) {
       try {
         const [fileHandle] = await (window as any).showOpenFilePicker({
-          types: [{ accept: { "text/plain": [".txt", ".md", ".json", ".csv", ".log"] } }],
+          types: [
+            {
+              accept: {
+                "text/plain": [".txt", ".md", ".json", ".csv", ".log"],
+              },
+            },
+          ],
         });
         const file = await fileHandle.getFile();
         const content = await file.text();
         const currentTab = tabs.find((t) => t.id === activeTabId);
-        if (currentTab && currentTab.title === "Sem título" && !currentTab.isDirty && currentTab.content === "") {
-          updateTab(activeTabId, { title: file.name, content, isDirty: false, fileHandle });
+        if (
+          currentTab &&
+          currentTab.title === "Sem título" &&
+          !currentTab.isDirty &&
+          currentTab.content === ""
+        ) {
+          updateTab(activeTabId, {
+            title: file.name,
+            content,
+            isDirty: false,
+            fileHandle,
+          });
         } else {
           const newId = generateId();
-          setTabs((prev) => [...prev, { id: newId, title: file.name, content, isDirty: false, fileHandle }]);
+          setTabs((prev) => [
+            ...prev,
+            {
+              id: newId,
+              title: file.name,
+              content,
+              isDirty: false,
+              fileHandle,
+            },
+          ]);
           setActiveTabId(newId);
         }
       } catch (err) {
@@ -93,11 +143,30 @@ export default function Editor() {
         if (!file) return;
         const content = await file.text();
         const currentTab = tabs.find((t) => t.id === activeTabId);
-        if (currentTab && currentTab.title === "Sem título" && !currentTab.isDirty && currentTab.content === "") {
-          updateTab(activeTabId, { title: file.name, content, isDirty: false, fileHandle: null });
+        if (
+          currentTab &&
+          currentTab.title === "Sem título" &&
+          !currentTab.isDirty &&
+          currentTab.content === ""
+        ) {
+          updateTab(activeTabId, {
+            title: file.name,
+            content,
+            isDirty: false,
+            fileHandle: null,
+          });
         } else {
           const newId = generateId();
-          setTabs((prev) => [...prev, { id: newId, title: file.name, content, isDirty: false, fileHandle: null }]);
+          setTabs((prev) => [
+            ...prev,
+            {
+              id: newId,
+              title: file.name,
+              content,
+              isDirty: false,
+              fileHandle: null,
+            },
+          ]);
           setActiveTabId(newId);
         }
       };
@@ -111,13 +180,18 @@ export default function Editor() {
     if ("showSaveFilePicker" in window) {
       try {
         const fileHandle = await (window as any).showSaveFilePicker({
-          suggestedName: tab.title === "Sem título" ? "document.txt" : tab.title,
+          suggestedName:
+            tab.title === "Sem título" ? "document.txt" : tab.title,
           types: [{ accept: { "text/plain": [".txt"] } }],
         });
         const writable = await fileHandle.createWritable();
         await writable.write(tab.content);
         await writable.close();
-        updateTab(tab.id, { title: fileHandle.name, isDirty: false, fileHandle });
+        updateTab(tab.id, {
+          title: fileHandle.name,
+          isDirty: false,
+          fileHandle,
+        });
       } catch (err) {
         console.log("User cancelled or error saving file", err);
       }
@@ -154,10 +228,23 @@ export default function Editor() {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.ctrlKey || e.metaKey) {
         switch (e.key.toLowerCase()) {
-          case "n": e.preventDefault(); newTab(); break;
-          case "o": e.preventDefault(); openFile(); break;
-          case "s": e.preventDefault(); if (e.shiftKey) saveFileAs(); else saveFile(); break;
-          case "w": e.preventDefault(); closeTab(activeTabId); break;
+          case "n":
+            e.preventDefault();
+            newTab();
+            break;
+          case "o":
+            e.preventDefault();
+            openFile();
+            break;
+          case "s":
+            e.preventDefault();
+            if (e.shiftKey) saveFileAs();
+            else saveFile();
+            break;
+          case "w":
+            e.preventDefault();
+            closeTab(activeTabId);
+            break;
         }
       }
     };
@@ -166,48 +253,63 @@ export default function Editor() {
   }, [newTab, openFile, saveFile, saveFileAs, closeTab, activeTabId]);
 
   return (
-    <div className="flex flex-col h-screen w-full bg-background font-sans overflow-hidden">
-      {/* Tab Bar */}
-      <div className="flex items-end bg-muted/60 border-b border-border pt-2 px-2 overflow-x-auto hide-scrollbar shrink-0">
-        <div className="flex space-x-1">
-          {tabs.map((tab) => (
-            <div
-              key={tab.id}
-              onClick={() => setActiveTabId(tab.id)}
-              className={`group flex items-center h-8 px-3 rounded-t-md border border-b-0 cursor-pointer min-w-[120px] max-w-[200px] select-none transition-colors ${
-                activeTabId === tab.id
-                  ? "bg-background border-border text-foreground relative -mb-[1px] z-10"
-                  : "bg-transparent border-transparent text-muted-foreground hover:bg-muted"
-              }`}
-            >
-              <div className="flex-1 truncate text-xs font-medium">{tab.title}</div>
-              {tab.isDirty && <div className="w-2 h-2 rounded-full bg-primary mx-2" />}
-              <button
-                onClick={(e) => closeTab(tab.id, e)}
-                className={`p-0.5 rounded-sm opacity-0 group-hover:opacity-100 hover:bg-accent/50 ${activeTabId === tab.id ? "opacity-100" : ""}`}
+    <div className="flex h-[calc(100vh-3.5rem)] min-h-[420px] w-full flex-col bg-background font-sans">
+      <div className="sticky top-14 z-40 shrink-0 bg-background">
+        {/* Tab Bar */}
+        <div className="flex items-end bg-muted/60 border-b border-border pt-2 px-2 overflow-x-auto hide-scrollbar">
+          <div className="flex space-x-1">
+            {tabs.map((tab) => (
+              <div
+                key={tab.id}
+                onClick={() => setActiveTabId(tab.id)}
+                className={`group flex items-center h-8 px-3 rounded-t-md border border-b-0 cursor-pointer min-w-[120px] max-w-[200px] select-none transition-colors ${
+                  activeTabId === tab.id
+                    ? "bg-background border-border text-foreground relative -mb-[1px] z-10"
+                    : "bg-transparent border-transparent text-muted-foreground hover:bg-muted"
+                }`}
               >
-                <X size={14} />
-              </button>
-            </div>
-          ))}
+                <div className="flex-1 truncate text-xs font-medium">
+                  {tab.title}
+                </div>
+                {tab.isDirty && (
+                  <div className="w-2 h-2 rounded-full bg-primary mx-2" />
+                )}
+                <button
+                  onClick={(e) => closeTab(tab.id, e)}
+                  className={`p-0.5 rounded-sm opacity-0 group-hover:opacity-100 hover:bg-accent/50 ${activeTabId === tab.id ? "opacity-100" : ""}`}
+                >
+                  <X size={14} />
+                </button>
+              </div>
+            ))}
+          </div>
+          <button
+            onClick={newTab}
+            className="p-1.5 ml-1 mb-1 rounded-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors shrink-0"
+            title="New file (Ctrl+N)"
+          >
+            <FilePlus size={16} />
+          </button>
         </div>
-        <button
-          onClick={newTab}
-          className="p-1.5 ml-1 mb-1 rounded-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors shrink-0"
-        >
-          <FilePlus size={16} />
-        </button>
-      </div>
 
-      {/* Toolbar - sem botão de tema */}
-      <div className="flex items-center justify-between px-4 h-10 border-b border-border bg-background shrink-0">
-        <div className="flex items-center space-x-2">
-          <button onClick={openFile} className="p-1.5 rounded-sm text-muted-foreground hover:bg-accent hover:text-foreground transition-colors" title="Open (Ctrl+O)">
-            <FolderOpen size={16} />
-          </button>
-          <button onClick={saveFile} className="p-1.5 rounded-sm text-muted-foreground hover:bg-accent hover:text-foreground transition-colors" title="Save (Ctrl+S)">
-            <Save size={16} />
-          </button>
+        {/* Toolbar - sem botão de tema */}
+        <div className="flex items-center justify-between px-4 h-10 border-b border-border bg-background">
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={openFile}
+              className="p-1.5 rounded-sm text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
+              title="Open (Ctrl+O)"
+            >
+              <FolderOpen size={16} />
+            </button>
+            <button
+              onClick={saveFile}
+              className="p-1.5 rounded-sm text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
+              title="Save (Ctrl+S)"
+            >
+              <Save size={16} />
+            </button>
+          </div>
         </div>
       </div>
 
@@ -223,7 +325,9 @@ export default function Editor() {
 
       {/* Status Bar */}
       <div className="h-6 flex items-center justify-between px-4 bg-muted/40 border-t border-border text-[11px] text-muted-foreground shrink-0">
-        <div className="truncate max-w-[50%]">{activeTab?.fileHandle?.name || activeTab?.title || "Sem título"}</div>
+        <div className="truncate max-w-[50%]">
+          {activeTab?.fileHandle?.name || activeTab?.title || "Sem título"}
+        </div>
         <div className="flex space-x-4">
           <span>{activeTab?.content.length || 0} chars</span>
           <span>{activeTab?.content.split("\n").length || 1} lines</span>
