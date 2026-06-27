@@ -2,6 +2,11 @@ import { useEffect, useState } from "react";
 
 const storageKey = "tabpad.clientId";
 const heartbeatMs = 30_000;
+const apiBaseUrl = import.meta.env.VITE_API_BASE_URL?.replace(/\/$/, "") ?? "";
+
+function apiUrl(path: string) {
+  return `${apiBaseUrl}${path}`;
+}
 
 function getClientId() {
   const existing = localStorage.getItem(storageKey);
@@ -28,7 +33,7 @@ export function useOnlineUsers() {
 
     const sendHeartbeat = async () => {
       try {
-        const response = await fetch("/api/online", {
+        const response = await fetch(apiUrl("/api/online"), {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ clientId }),

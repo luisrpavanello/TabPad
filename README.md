@@ -58,6 +58,14 @@ DATABASE_URL=<production database URL>
 BASE_PATH=/
 ```
 
+If the frontend is deployed to GitHub Pages, remember that GitHub Pages is static and does not run the Express API. Deploy `@workspace/api-server` to a server host first, then set this GitHub repository variable before the Pages build:
+
+```env
+VITE_API_BASE_URL=https://<your-api-host>
+```
+
+Example: if the API is deployed at `https://tabpad-api.example.com`, the production editor will call `https://tabpad-api.example.com/api/online` for the online counter.
+
 Do not commit production secrets to `.env`, README, or source files.
 
 ## Running the Project
@@ -173,6 +181,8 @@ pnpm run build
 This will typecheck and build all packages.
 
 For deployment, let the hosting provider set `NODE_ENV=production`, `PORT`, and `DATABASE_URL`. Local-only variables such as `API_PORT`, `EDITOR_PORT`, and `MOCKUP_PORT` are not required in production.
+
+For GitHub Pages, the workflow reads `VITE_API_BASE_URL` from repository variables. Without it, production requests default to `/api/...` on `tabpad.online`, which GitHub Pages cannot serve.
 
 ### Adding a New API Endpoint
 

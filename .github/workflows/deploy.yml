@@ -2,7 +2,7 @@ name: Deploy TabPad to GitHub Pages
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -17,8 +17,9 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     env:
-      PORT: 5173
+      EDITOR_PORT: 5173
       BASE_PATH: /
+      VITE_API_BASE_URL: ${{ vars.VITE_API_BASE_URL }}
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -30,7 +31,7 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: 24
-          cache: 'pnpm'
+          cache: "pnpm"
       - name: Install dependencies
         run: pnpm install
       - name: Build editor
@@ -42,7 +43,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: './artifacts/editor/dist/public'
+          path: "./artifacts/editor/dist/public"
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
