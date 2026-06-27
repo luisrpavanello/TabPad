@@ -1,11 +1,47 @@
-// artifacts/editor/src/Editor.tsx (cópia fiel do original, apenas sem o botão de tema)
-import React, { useState, useEffect, useCallback } from "react";
-import { FolderOpen, Save, FilePlus, X } from "lucide-react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import {
+  AlignLeft,
+  AlertTriangle,
+  Code2,
+  Eye,
+  FilePlus,
+  FolderOpen,
+  Save,
+  Sparkles,
+  X,
+} from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { useI18n } from "@/i18n";
+
+const storageKey = "tabpad.editorState.v2";
 
 const generateId = (): string =>
   typeof crypto.randomUUID === "function"
     ? crypto.randomUUID()
     : Math.random().toString(36).slice(2) + Date.now().toString(36);
+
+type ToolAction =
+  | "uppercase"
+  | "lowercase"
+  | "titleCase"
+  | "removeEmptyLines"
+  | "removeDuplicateLines"
+  | "sortLines"
+  | "trimLines"
+  | "formatJson";
 
 interface Tab {
   id: string;
@@ -15,24 +51,216 @@ interface Tab {
   fileHandle: FileSystemFileHandle | null;
 }
 
-export default function Editor() {
-  const [tabs, setTabs] = useState<Tab[]>([
-    {
-      id: generateId(),
-      title: "Sem título",
-      content: "",
-      isDirty: false,
-      fileHandle: null,
-    },
-  ]);
-  const [activeTabId, setActiveTabId] = useState<string>(tabs[0].id);
+interface StoredTab {
+  id: string;
+  title: string;
+  content: string;
+  isDirty: boolean;
+}
 
-  const activeTab = tabs.find((t) => t.id === activeTabId);
+function createEmptyTab(title: string): Tab {
+  return {
+    id: generateId(),
+    title,
+    content: "",
+    isDirty: false,
+    fileHandle: null,
+  };
+}
+
+function loadStoredState(defaultTitle: string) {
+  try {
+    const raw = localStorage.getItem(storageKey);
+
+    if (!raw) {
+      const tab = createEmptyTab(defaultTitle);
+      return { tabs: [tab], activeTabId: tab.id };
+    }
+
+    const parsed = JSON.parse(raw) as {
+      tabs?: StoredTab[];
+      activeTabId?: string;
+    };
+    const storedTabs = Array.isArray(parsed.tabs) ? parsed.tabs : [];
+    const tabs = storedTabs
+      .filter((tab) => typeof tab.id === "string")
+      .map<Tab>((tab) => ({
+        id: tab.id,
+        title: tab.title || defaultTitle,
+        content: tab.content || "",
+        isDirty: Boolean(tab.isDirty),
+        fileHandle: null,
+      }));
+
+    if (tabs.length === 0) {
+      const tab = createEmptyTab(defaultTitle);
+      return { tabs: [tab], activeTabId: tab.id };
+    }
+
+    return {
+      tabs,
+      activeTabId: tabs.some((tab) => tab.id === parsed.activeTabId)
+        ? parsed.activeTabId!
+        : tabs[0].id,
+    };
+  } catch {
+    const tab = createEmptyTab(defaultTitle);
+    return { tabs: [tab], activeTabId: tab.id };
+  }
+}
+
+function countWords(value: string) {
+  return value.trim() ? value.trim().split(/\s+/).length : 0;
+}
+
+function toTitleCase(value: string) {
+  return value.toLowerCase().replace(/\b\w/g, (letter) => letter.toUpperCase());
+}
+
+function applyTextTool(action: ToolAction, value: string) {
+  const normalizedValue = value.replace(/\r\n?/g, "\n");
+
+  switch (action) {
+    case "uppercase":
+      return value.toUpperCase();
+    case "lowercase":
+      return value.toLowerCase();
+    case "titleCase":
+      return toTitleCase(value);
+    case "removeEmptyLines":
+      return normalizedValue
+        .split("\n")
+        .filter((line) => line.trim().length > 0)
+        .join("\n");
+    case "removeDuplicateLines":
+      return Array.from(new Set(normalizedValue.split("\n"))).join("\n");
+    case "sortLines":
+      return normalizedValue
+        .split("\n")
+        .sort((a, b) => a.localeCompare(b))
+        .join("\n");
+    case "trimLines":
+      return normalizedValue
+        .split("\n")
+        .map((line) => line.replace(/^[\t ]+|[\t ]+$/g, ""))
+        .join("\n")
+        .replace(/^\n+|\n+$/g, "");
+    case "formatJson":
+      return value.trim()
+        ? JSON.stringify(JSON.parse(value.trim()), null, 2)
+        : value;
+  }
+}
+
+function escapeHtml(value: string) {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+function renderInlineMarkdown(value: string) {
+  return escapeHtml(value)
+    .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+    .replace(/\*(.*?)\*/g, "<em>$1</em>")
+    .replace(/`([^`]+)`/g, "<code>$1</code>");
+}
+
+function renderMarkdown(value: string) {
+  const lines = value.split("\n");
+  const output: string[] = [];
+  let inList = false;
+
+  for (const line of lines) {
+    if (/^###\s+/.test(line)) {
+      if (inList) {
+        output.push("</ul>");
+        inList = false;
+      }
+      output.push(
+        `<h3>${renderInlineMarkdown(line.replace(/^###\s+/, ""))}</h3>`,
+      );
+      continue;
+    }
+
+    if (/^##\s+/.test(line)) {
+      if (inList) {
+        output.push("</ul>");
+        inList = false;
+      }
+      output.push(
+        `<h2>${renderInlineMarkdown(line.replace(/^##\s+/, ""))}</h2>`,
+      );
+      continue;
+    }
+
+    if (/^#\s+/.test(line)) {
+      if (inList) {
+        output.push("</ul>");
+        inList = false;
+      }
+      output.push(
+        `<h1>${renderInlineMarkdown(line.replace(/^#\s+/, ""))}</h1>`,
+      );
+      continue;
+    }
+
+    if (/^[-*]\s+/.test(line)) {
+      if (!inList) {
+        output.push("<ul>");
+        inList = true;
+      }
+      output.push(
+        `<li>${renderInlineMarkdown(line.replace(/^[-*]\s+/, ""))}</li>`,
+      );
+      continue;
+    }
+
+    if (inList) {
+      output.push("</ul>");
+      inList = false;
+    }
+
+    output.push(
+      line.trim() ? `<p>${renderInlineMarkdown(line)}</p>` : "<br />",
+    );
+  }
+
+  if (inList) {
+    output.push("</ul>");
+  }
+
+  return output.join("");
+}
+
+export default function Editor() {
+  const { t } = useI18n();
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+  const [{ tabs, activeTabId }, setEditorState] = useState(() =>
+    loadStoredState(t.editor.untitled),
+  );
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [selectedTool, setSelectedTool] = useState<ToolAction>("formatJson");
+  const [pendingCloseTabId, setPendingCloseTabId] = useState<string | null>(
+    null,
+  );
+  const [toolError, setToolError] = useState<string | null>(null);
+
+  const activeTab = tabs.find((tab) => tab.id === activeTabId);
+  const markdownPreview = useMemo(
+    () => renderMarkdown(activeTab?.content || ""),
+    [activeTab?.content],
+  );
 
   const updateTab = useCallback((id: string, updates: Partial<Tab>) => {
-    setTabs((prev) =>
-      prev.map((t) => (t.id === id ? { ...t, ...updates } : t)),
-    );
+    setEditorState((prev) => ({
+      ...prev,
+      tabs: prev.tabs.map((tab) =>
+        tab.id === id ? { ...tab, ...updates } : tab,
+      ),
+    }));
   }, []);
 
   const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -42,52 +270,48 @@ export default function Editor() {
   };
 
   const newTab = useCallback(() => {
-    const newId = generateId();
-    setTabs((prev) => [
-      ...prev,
-      {
-        id: newId,
-        title: "Sem título",
-        content: "",
-        isDirty: false,
-        fileHandle: null,
-      },
-    ]);
-    setActiveTabId(newId);
-  }, []);
+    const tab = createEmptyTab(t.editor.untitled);
+    setEditorState((prev) => ({
+      tabs: [...prev.tabs, tab],
+      activeTabId: tab.id,
+    }));
+  }, [t.editor.untitled]);
+
+  const removeTab = useCallback(
+    (id: string) => {
+      setEditorState((prev) => {
+        const filtered = prev.tabs.filter((tab) => tab.id !== id);
+
+        if (filtered.length === 0) {
+          const tab = createEmptyTab(t.editor.untitled);
+          return { tabs: [tab], activeTabId: tab.id };
+        }
+
+        return {
+          tabs: filtered,
+          activeTabId:
+            prev.activeTabId === id
+              ? filtered[Math.max(0, filtered.length - 1)].id
+              : prev.activeTabId,
+        };
+      });
+    },
+    [t.editor.untitled],
+  );
 
   const closeTab = useCallback(
     (id: string, e?: React.MouseEvent) => {
       e?.stopPropagation();
-      const tabToClose = tabs.find((t) => t.id === id);
-      if (
-        tabToClose?.isDirty &&
-        !window.confirm(`Save changes to ${tabToClose.title}?`)
-      ) {
+      const tabToClose = tabs.find((tab) => tab.id === id);
+
+      if (tabToClose?.isDirty) {
+        setPendingCloseTabId(id);
         return;
       }
-      setTabs((prev) => {
-        const filtered = prev.filter((t) => t.id !== id);
-        if (filtered.length === 0) {
-          const newId = generateId();
-          setActiveTabId(newId);
-          return [
-            {
-              id: newId,
-              title: "Sem título",
-              content: "",
-              isDirty: false,
-              fileHandle: null,
-            },
-          ];
-        }
-        if (activeTabId === id) {
-          setActiveTabId(filtered[Math.max(0, filtered.length - 1)].id);
-        }
-        return filtered;
-      });
+
+      removeTab(id);
     },
-    [tabs, activeTabId],
+    [removeTab, tabs],
   );
 
   const openFile = useCallback(async () => {
@@ -104,10 +328,11 @@ export default function Editor() {
         });
         const file = await fileHandle.getFile();
         const content = await file.text();
-        const currentTab = tabs.find((t) => t.id === activeTabId);
+        const currentTab = tabs.find((tab) => tab.id === activeTabId);
+
         if (
           currentTab &&
-          currentTab.title === "Sem título" &&
+          currentTab.title === t.editor.untitled &&
           !currentTab.isDirty &&
           currentTab.content === ""
         ) {
@@ -118,18 +343,17 @@ export default function Editor() {
             fileHandle,
           });
         } else {
-          const newId = generateId();
-          setTabs((prev) => [
-            ...prev,
-            {
-              id: newId,
-              title: file.name,
-              content,
-              isDirty: false,
-              fileHandle,
-            },
-          ]);
-          setActiveTabId(newId);
+          const tab = {
+            id: generateId(),
+            title: file.name,
+            content,
+            isDirty: false,
+            fileHandle,
+          };
+          setEditorState((prev) => ({
+            tabs: [...prev.tabs, tab],
+            activeTabId: tab.id,
+          }));
         }
       } catch (err) {
         console.log("User cancelled or error opening file", err);
@@ -142,47 +366,32 @@ export default function Editor() {
         const file = (e.target as HTMLInputElement).files?.[0];
         if (!file) return;
         const content = await file.text();
-        const currentTab = tabs.find((t) => t.id === activeTabId);
-        if (
-          currentTab &&
-          currentTab.title === "Sem título" &&
-          !currentTab.isDirty &&
-          currentTab.content === ""
-        ) {
-          updateTab(activeTabId, {
-            title: file.name,
-            content,
-            isDirty: false,
-            fileHandle: null,
-          });
-        } else {
-          const newId = generateId();
-          setTabs((prev) => [
-            ...prev,
-            {
-              id: newId,
-              title: file.name,
-              content,
-              isDirty: false,
-              fileHandle: null,
-            },
-          ]);
-          setActiveTabId(newId);
-        }
+        const tab = {
+          id: generateId(),
+          title: file.name,
+          content,
+          isDirty: false,
+          fileHandle: null,
+        };
+        setEditorState((prev) => ({
+          tabs: [...prev.tabs, tab],
+          activeTabId: tab.id,
+        }));
       };
       input.click();
     }
-  }, [tabs, activeTabId, updateTab]);
+  }, [tabs, activeTabId, updateTab, t.editor.untitled]);
 
   const saveFileAs = useCallback(async () => {
-    const tab = tabs.find((t) => t.id === activeTabId);
+    const tab = tabs.find((candidate) => candidate.id === activeTabId);
     if (!tab) return;
+
     if ("showSaveFilePicker" in window) {
       try {
         const fileHandle = await (window as any).showSaveFilePicker({
           suggestedName:
-            tab.title === "Sem título" ? "document.txt" : tab.title,
-          types: [{ accept: { "text/plain": [".txt"] } }],
+            tab.title === t.editor.untitled ? t.editor.documentName : tab.title,
+          types: [{ accept: { "text/plain": [".txt", ".md"] } }],
         });
         const writable = await fileHandle.createWritable();
         await writable.write(tab.content);
@@ -200,16 +409,18 @@ export default function Editor() {
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = tab.title === "Sem título" ? "document.txt" : tab.title;
+      a.download =
+        tab.title === t.editor.untitled ? t.editor.documentName : tab.title;
       a.click();
       URL.revokeObjectURL(url);
       updateTab(tab.id, { isDirty: false });
     }
-  }, [tabs, activeTabId, updateTab]);
+  }, [tabs, activeTabId, updateTab, t.editor]);
 
   const saveFile = useCallback(async () => {
-    const tab = tabs.find((t) => t.id === activeTabId);
+    const tab = tabs.find((candidate) => candidate.id === activeTabId);
     if (!tab) return;
+
     if (tab.fileHandle) {
       try {
         const writable = await (tab.fileHandle as any).createWritable();
@@ -220,9 +431,62 @@ export default function Editor() {
         console.error("Failed to save", err);
       }
     } else {
-      saveFileAs();
+      await saveFileAs();
     }
   }, [tabs, activeTabId, updateTab, saveFileAs]);
+
+  const runTool = useCallback(() => {
+    if (!activeTab) return;
+
+    const textarea = textareaRef.current;
+    const selectionStart = textarea?.selectionStart ?? 0;
+    const selectionEnd = textarea?.selectionEnd ?? 0;
+    const hasSelection = Boolean(textarea && selectionEnd > selectionStart);
+    const targetText = hasSelection
+      ? activeTab.content.slice(selectionStart, selectionEnd)
+      : activeTab.content;
+
+    try {
+      const transformedText = applyTextTool(selectedTool, targetText);
+      const content = hasSelection
+        ? `${activeTab.content.slice(0, selectionStart)}${transformedText}${activeTab.content.slice(selectionEnd)}`
+        : transformedText;
+
+      updateTab(activeTab.id, {
+        content,
+        isDirty: true,
+      });
+
+      if (hasSelection) {
+        window.requestAnimationFrame(() => {
+          textarea?.focus();
+          textarea?.setSelectionRange(
+            selectionStart,
+            selectionStart + transformedText.length,
+          );
+        });
+      }
+    } catch (error) {
+      if (selectedTool === "formatJson") {
+        setToolError(t.editor.invalidJsonDescription);
+      } else {
+        console.error(error);
+      }
+    }
+  }, [activeTab, selectedTool, t.editor.invalidJsonDescription, updateTab]);
+
+  useEffect(() => {
+    const state = {
+      activeTabId,
+      tabs: tabs.map<StoredTab>((tab) => ({
+        id: tab.id,
+        title: tab.title,
+        content: tab.content,
+        isDirty: tab.isDirty,
+      })),
+    };
+    localStorage.setItem(storageKey, JSON.stringify(state));
+  }, [tabs, activeTabId]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -234,12 +498,12 @@ export default function Editor() {
             break;
           case "o":
             e.preventDefault();
-            openFile();
+            void openFile();
             break;
           case "s":
             e.preventDefault();
-            if (e.shiftKey) saveFileAs();
-            else saveFile();
+            if (e.shiftKey) void saveFileAs();
+            else void saveFile();
             break;
           case "w":
             e.preventDefault();
@@ -255,13 +519,14 @@ export default function Editor() {
   return (
     <div className="flex h-[calc(100vh-3.5rem)] min-h-[420px] w-full flex-col bg-background font-sans">
       <div className="sticky top-14 z-40 shrink-0 bg-background">
-        {/* Tab Bar */}
         <div className="flex items-end bg-muted/60 border-b border-border pt-2 px-2 overflow-x-auto hide-scrollbar">
           <div className="flex space-x-1">
             {tabs.map((tab) => (
               <div
                 key={tab.id}
-                onClick={() => setActiveTabId(tab.id)}
+                onClick={() =>
+                  setEditorState((prev) => ({ ...prev, activeTabId: tab.id }))
+                }
                 className={`group flex items-center h-8 px-3 rounded-t-md border border-b-0 cursor-pointer min-w-[120px] max-w-[200px] select-none transition-colors ${
                   activeTabId === tab.id
                     ? "bg-background border-border text-foreground relative -mb-[1px] z-10"
@@ -277,6 +542,7 @@ export default function Editor() {
                 <button
                   onClick={(e) => closeTab(tab.id, e)}
                   className={`p-0.5 rounded-sm opacity-0 group-hover:opacity-100 hover:bg-accent/50 ${activeTabId === tab.id ? "opacity-100" : ""}`}
+                  title="Close"
                 >
                   <X size={14} />
                 </button>
@@ -286,53 +552,178 @@ export default function Editor() {
           <button
             onClick={newTab}
             className="p-1.5 ml-1 mb-1 rounded-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors shrink-0"
-            title="New file (Ctrl+N)"
+            title={`${t.editor.newFile} (Ctrl+N)`}
           >
             <FilePlus size={16} />
           </button>
         </div>
 
-        {/* Toolbar - sem botão de tema */}
-        <div className="flex items-center justify-between px-4 h-10 border-b border-border bg-background">
-          <div className="flex items-center space-x-2">
+        <div className="flex flex-wrap items-center justify-between gap-2 px-4 min-h-10 border-b border-border bg-background py-1.5">
+          <div className="flex items-center gap-2">
             <button
-              onClick={openFile}
+              onClick={() => void openFile()}
               className="p-1.5 rounded-sm text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
-              title="Open (Ctrl+O)"
+              title={`${t.editor.open} (Ctrl+O)`}
             >
               <FolderOpen size={16} />
             </button>
             <button
-              onClick={saveFile}
+              onClick={() => void saveFile()}
               className="p-1.5 rounded-sm text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
-              title="Save (Ctrl+S)"
+              title={`${t.editor.save} (Ctrl+S)`}
             >
               <Save size={16} />
+            </button>
+            <button
+              onClick={() => setIsPreviewOpen((value) => !value)}
+              className={`p-1.5 rounded-sm text-muted-foreground hover:bg-accent hover:text-foreground transition-colors ${
+                isPreviewOpen ? "bg-accent text-foreground" : ""
+              }`}
+              title={isPreviewOpen ? t.editor.edit : t.editor.preview}
+            >
+              {isPreviewOpen ? <AlignLeft size={16} /> : <Eye size={16} />}
+            </button>
+          </div>
+
+          <div className="flex min-w-0 flex-1 items-center justify-end gap-2">
+            <label className="flex min-w-[180px] max-w-[260px] flex-1 items-center gap-1.5 rounded-sm border border-border bg-muted/20 px-2 py-1 text-xs text-muted-foreground sm:flex-none">
+              <Sparkles size={14} aria-hidden="true" />
+              <span className="sr-only">{t.editor.tools}</span>
+              <select
+                className="min-w-0 flex-1 bg-transparent outline-none"
+                value={selectedTool}
+                onChange={(event) =>
+                  setSelectedTool(event.target.value as ToolAction)
+                }
+                aria-label={t.editor.tools}
+              >
+                {Object.entries(t.editor.toolOptions).map(([value, label]) => (
+                  <option key={value} value={value}>
+                    {label}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <button
+              onClick={runTool}
+              className="inline-flex h-8 items-center gap-1.5 rounded-sm bg-primary px-2.5 text-xs font-medium text-primary-foreground hover:opacity-90"
+              title={t.editor.tools}
+            >
+              <Code2 size={14} />
+              <span>{t.editor.tools}</span>
             </button>
           </div>
         </div>
       </div>
 
-      {/* Editor Area */}
-      <div className="flex-1 relative overflow-hidden bg-background">
-        <textarea
-          value={activeTab?.content || ""}
-          onChange={handleContentChange}
-          className="absolute inset-0 w-full h-full resize-none p-6 outline-none bg-transparent text-foreground font-mono text-sm leading-relaxed"
-          spellCheck={false}
-        />
+      <div
+        className={`grid flex-1 overflow-hidden bg-background ${
+          isPreviewOpen ? "grid-cols-1 md:grid-cols-2" : "grid-cols-1"
+        }`}
+      >
+        <div className="relative overflow-hidden bg-background">
+          <textarea
+            ref={textareaRef}
+            value={activeTab?.content || ""}
+            onChange={handleContentChange}
+            className="absolute inset-0 w-full h-full resize-none p-6 outline-none bg-transparent text-foreground font-mono text-sm leading-relaxed"
+            spellCheck={false}
+          />
+        </div>
+
+        {isPreviewOpen && (
+          <div className="overflow-auto border-t border-border bg-muted/20 p-6 md:border-l md:border-t-0">
+            <article
+              className="prose prose-sm max-w-none text-foreground prose-headings:text-foreground prose-p:text-foreground prose-li:text-foreground prose-code:text-foreground"
+              dangerouslySetInnerHTML={{ __html: markdownPreview }}
+            />
+          </div>
+        )}
       </div>
 
-      {/* Status Bar */}
       <div className="h-6 flex items-center justify-between px-4 bg-muted/40 border-t border-border text-[11px] text-muted-foreground shrink-0">
         <div className="truncate max-w-[50%]">
-          {activeTab?.fileHandle?.name || activeTab?.title || "Sem título"}
+          {activeTab?.fileHandle?.name || activeTab?.title || t.editor.untitled}
+          <span className="ml-2 hidden sm:inline">· {t.editor.saved}</span>
         </div>
         <div className="flex space-x-4">
-          <span>{activeTab?.content.length || 0} chars</span>
-          <span>{activeTab?.content.split("\n").length || 1} lines</span>
+          <span>
+            {activeTab?.content.length || 0} {t.editor.chars}
+          </span>
+          <span>
+            {countWords(activeTab?.content || "")} {t.editor.words}
+          </span>
+          <span>
+            {activeTab?.content.split("\n").length || 1} {t.editor.lines}
+          </span>
         </div>
       </div>
+
+      <Dialog
+        open={pendingCloseTabId !== null}
+        onOpenChange={(open) => {
+          if (!open) {
+            setPendingCloseTabId(null);
+          }
+        }}
+      >
+        <DialogContent className="max-w-md rounded-md">
+          <DialogHeader>
+            <div className="mb-2 flex h-10 w-10 items-center justify-center rounded-sm bg-destructive/10 text-destructive">
+              <AlertTriangle size={20} />
+            </div>
+            <DialogTitle>{t.editor.discardTitle}</DialogTitle>
+            <DialogDescription>
+              {t.editor.discardDescription(
+                tabs.find((tab) => tab.id === pendingCloseTabId)?.title ||
+                  t.editor.untitled,
+              )}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <button
+              type="button"
+              onClick={() => setPendingCloseTabId(null)}
+              className="h-9 rounded-sm border border-border px-3 text-sm font-medium text-foreground hover:bg-accent"
+            >
+              {t.editor.cancel}
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                if (pendingCloseTabId) {
+                  removeTab(pendingCloseTabId);
+                }
+                setPendingCloseTabId(null);
+              }}
+              className="h-9 rounded-sm bg-destructive px-3 text-sm font-medium text-destructive-foreground hover:opacity-90"
+            >
+              {t.editor.discard}
+            </button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={toolError !== null} onOpenChange={() => setToolError(null)}>
+        <DialogContent className="max-w-md rounded-md">
+          <DialogHeader>
+            <div className="mb-2 flex h-10 w-10 items-center justify-center rounded-sm bg-destructive/10 text-destructive">
+              <Code2 size={20} />
+            </div>
+            <DialogTitle>{t.editor.invalidJsonTitle}</DialogTitle>
+            <DialogDescription>{toolError}</DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <button
+              type="button"
+              onClick={() => setToolError(null)}
+              className="h-9 rounded-sm bg-primary px-3 text-sm font-medium text-primary-foreground hover:opacity-90"
+            >
+              OK
+            </button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
