@@ -1,15 +1,8 @@
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
-  AlignLeft,
   AlertTriangle,
+  ChevronDown,
   Code2,
-  Eye,
   FilePlus,
   FolderOpen,
   Save,
@@ -152,96 +145,12 @@ function applyTextTool(action: ToolAction, value: string) {
   }
 }
 
-function escapeHtml(value: string) {
-  return value
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-}
-
-function renderInlineMarkdown(value: string) {
-  return escapeHtml(value)
-    .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
-    .replace(/\*(.*?)\*/g, "<em>$1</em>")
-    .replace(/`([^`]+)`/g, "<code>$1</code>");
-}
-
-function renderMarkdown(value: string) {
-  const lines = value.split("\n");
-  const output: string[] = [];
-  let inList = false;
-
-  for (const line of lines) {
-    if (/^###\s+/.test(line)) {
-      if (inList) {
-        output.push("</ul>");
-        inList = false;
-      }
-      output.push(
-        `<h3>${renderInlineMarkdown(line.replace(/^###\s+/, ""))}</h3>`,
-      );
-      continue;
-    }
-
-    if (/^##\s+/.test(line)) {
-      if (inList) {
-        output.push("</ul>");
-        inList = false;
-      }
-      output.push(
-        `<h2>${renderInlineMarkdown(line.replace(/^##\s+/, ""))}</h2>`,
-      );
-      continue;
-    }
-
-    if (/^#\s+/.test(line)) {
-      if (inList) {
-        output.push("</ul>");
-        inList = false;
-      }
-      output.push(
-        `<h1>${renderInlineMarkdown(line.replace(/^#\s+/, ""))}</h1>`,
-      );
-      continue;
-    }
-
-    if (/^[-*]\s+/.test(line)) {
-      if (!inList) {
-        output.push("<ul>");
-        inList = true;
-      }
-      output.push(
-        `<li>${renderInlineMarkdown(line.replace(/^[-*]\s+/, ""))}</li>`,
-      );
-      continue;
-    }
-
-    if (inList) {
-      output.push("</ul>");
-      inList = false;
-    }
-
-    output.push(
-      line.trim() ? `<p>${renderInlineMarkdown(line)}</p>` : "<br />",
-    );
-  }
-
-  if (inList) {
-    output.push("</ul>");
-  }
-
-  return output.join("");
-}
-
 export default function Editor() {
   const { t } = useI18n();
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const [{ tabs, activeTabId }, setEditorState] = useState(() =>
     loadStoredState(t.editor.untitled),
   );
-  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [selectedTool, setSelectedTool] = useState<ToolAction>("formatJson");
   const [pendingCloseTabId, setPendingCloseTabId] = useState<string | null>(
     null,
@@ -249,10 +158,6 @@ export default function Editor() {
   const [toolError, setToolError] = useState<string | null>(null);
 
   const activeTab = tabs.find((tab) => tab.id === activeTabId);
-  const markdownPreview = useMemo(
-    () => renderMarkdown(activeTab?.content || ""),
-    [activeTab?.content],
-  );
 
   const updateTab = useCallback((id: string, updates: Partial<Tab>) => {
     setEditorState((prev) => ({
@@ -574,23 +479,15 @@ export default function Editor() {
             >
               <Save size={16} />
             </button>
-            <button
-              onClick={() => setIsPreviewOpen((value) => !value)}
-              className={`p-1.5 rounded-sm text-muted-foreground hover:bg-accent hover:text-foreground transition-colors ${
-                isPreviewOpen ? "bg-accent text-foreground" : ""
-              }`}
-              title={isPreviewOpen ? t.editor.edit : t.editor.preview}
-            >
-              {isPreviewOpen ? <AlignLeft size={16} /> : <Eye size={16} />}
-            </button>
           </div>
 
           <div className="flex min-w-0 flex-1 items-center justify-end gap-2">
-            <label className="flex min-w-[180px] max-w-[260px] flex-1 items-center gap-1.5 rounded-sm border border-border bg-muted/20 px-2 py-1 text-xs text-muted-foreground sm:flex-none">
-              <Sparkles size={14} aria-hidden="true" />
-              <span className="sr-only">{t.editor.tools}</span>
+            <label className="relative flex h-8 min-w-[148px] max-w-[190px] flex-1 items-center rounded-sm border border-border bg-muted/30 text-xs text-muted-foreground shadow-sm transition-colors focus-within:border-primary/70 focus-within:bg-background sm:flex-none">
+              <span className="flex h-full w-8 items-center justify-center border-r border-border/80">
+                <Sparkles size={14} aria-hidden="true" />
+              </span>
               <select
-                className="min-w-0 flex-1 bg-transparent outline-none"
+                className="h-full min-w-0 flex-1 appearance-none bg-transparent pl-2 pr-7 font-medium text-foreground outline-none"
                 value={selectedTool}
                 onChange={(event) =>
                   setSelectedTool(event.target.value as ToolAction)
@@ -603,25 +500,26 @@ export default function Editor() {
                   </option>
                 ))}
               </select>
+              <ChevronDown
+                className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground"
+                size={14}
+                aria-hidden="true"
+              />
             </label>
             <button
               onClick={runTool}
-              className="inline-flex h-8 items-center gap-1.5 rounded-sm bg-primary px-2.5 text-xs font-medium text-primary-foreground hover:opacity-90"
+              className="inline-flex h-8 items-center gap-1.5 rounded-sm bg-primary px-2.5 text-xs font-medium text-primary-foreground shadow-sm hover:opacity-90"
               title={t.editor.tools}
             >
               <Code2 size={14} />
-              <span>{t.editor.tools}</span>
+              <span>{t.editor.applyTool}</span>
             </button>
           </div>
         </div>
       </div>
 
-      <div
-        className={`grid flex-1 overflow-hidden bg-background ${
-          isPreviewOpen ? "grid-cols-1 md:grid-cols-2" : "grid-cols-1"
-        }`}
-      >
-        <div className="relative overflow-hidden bg-background">
+      <div className="flex-1 overflow-hidden bg-background">
+        <div className="relative h-full overflow-hidden bg-background">
           <textarea
             ref={textareaRef}
             value={activeTab?.content || ""}
@@ -630,15 +528,6 @@ export default function Editor() {
             spellCheck={false}
           />
         </div>
-
-        {isPreviewOpen && (
-          <div className="overflow-auto border-t border-border bg-muted/20 p-6 md:border-l md:border-t-0">
-            <article
-              className="prose prose-sm max-w-none text-foreground prose-headings:text-foreground prose-p:text-foreground prose-li:text-foreground prose-code:text-foreground"
-              dangerouslySetInnerHTML={{ __html: markdownPreview }}
-            />
-          </div>
-        )}
       </div>
 
       <div className="h-6 flex items-center justify-between px-4 bg-muted/40 border-t border-border text-[11px] text-muted-foreground shrink-0">

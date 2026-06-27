@@ -19,7 +19,7 @@ type Dictionary = {
     open: string;
     save: string;
     tools: string;
-    preview: string;
+    applyTool: string;
     edit: string;
     chars: string;
     lines: string;
@@ -74,7 +74,7 @@ const dictionaries: Record<Locale, Dictionary> = {
       open: "Open",
       save: "Save",
       tools: "Text tools",
-      preview: "Preview",
+      applyTool: "Apply",
       edit: "Edit",
       chars: "chars",
       lines: "lines",
@@ -87,18 +87,18 @@ const dictionaries: Record<Locale, Dictionary> = {
       discard: "Discard",
       invalidJsonTitle: "Invalid JSON",
       invalidJsonDescription:
-        "The selected text or active document is not valid JSON yet.",
+        'Format JSON only works with pure JSON, for example {"name":"TabPad"}. Keys and strings need double quotes, and trailing commas are not allowed. Select only the JSON block if the file has other text.',
       closeConfirm: (title) => `Save changes to ${title}?`,
       documentName: "document.txt",
       toolOptions: {
-        uppercase: "UPPERCASE",
-        lowercase: "lowercase",
-        titleCase: "Title Case",
-        removeEmptyLines: "Remove empty lines",
-        removeDuplicateLines: "Remove duplicate lines",
-        sortLines: "Sort lines",
-        trimLines: "Trim lines",
-        formatJson: "Format JSON",
+        uppercase: "UPPER",
+        lowercase: "lower",
+        titleCase: "Title",
+        removeEmptyLines: "No blanks",
+        removeDuplicateLines: "Unique",
+        sortLines: "Sort",
+        trimLines: "Trim",
+        formatJson: "JSON",
       },
     },
     contact: {
@@ -129,7 +129,7 @@ const dictionaries: Record<Locale, Dictionary> = {
       open: "Abrir",
       save: "Salvar",
       tools: "Ferramentas de texto",
-      preview: "Preview",
+      applyTool: "Aplicar",
       edit: "Editar",
       chars: "caracteres",
       lines: "linhas",
@@ -142,18 +142,18 @@ const dictionaries: Record<Locale, Dictionary> = {
       discard: "Descartar",
       invalidJsonTitle: "JSON invalido",
       invalidJsonDescription:
-        "O texto selecionado ou documento ativo ainda nao e um JSON valido.",
+        'Formatar JSON funciona apenas com JSON puro, por exemplo {"nome":"TabPad"}. Chaves e textos precisam de aspas duplas, e virgula sobrando no final nao e permitida. Selecione apenas o bloco JSON se o arquivo tiver outros textos.',
       closeConfirm: (title) => `Salvar alteracoes em ${title}?`,
       documentName: "documento.txt",
       toolOptions: {
-        uppercase: "MAIUSCULAS",
-        lowercase: "minusculas",
+        uppercase: "MAIUS",
+        lowercase: "minus",
         titleCase: "Titulo",
-        removeEmptyLines: "Remover linhas vazias",
-        removeDuplicateLines: "Remover linhas duplicadas",
-        sortLines: "Ordenar linhas",
-        trimLines: "Limpar espacos nas linhas",
-        formatJson: "Formatar JSON",
+        removeEmptyLines: "Sem vazias",
+        removeDuplicateLines: "Unicas",
+        sortLines: "Ordenar",
+        trimLines: "Limpar",
+        formatJson: "JSON",
       },
     },
     contact: {
@@ -184,7 +184,7 @@ const dictionaries: Record<Locale, Dictionary> = {
       open: "Abrir",
       save: "Guardar",
       tools: "Herramientas de texto",
-      preview: "Vista previa",
+      applyTool: "Aplicar",
       edit: "Editar",
       chars: "caracteres",
       lines: "lineas",
@@ -197,18 +197,18 @@ const dictionaries: Record<Locale, Dictionary> = {
       discard: "Descartar",
       invalidJsonTitle: "JSON invalido",
       invalidJsonDescription:
-        "El texto seleccionado o documento activo todavia no es JSON valido.",
+        'Formatear JSON solo funciona con JSON puro, por ejemplo {"nombre":"TabPad"}. Las claves y textos necesitan comillas dobles, y no se permiten comas finales. Selecciona solo el bloque JSON si el archivo tiene otros textos.',
       closeConfirm: (title) => `Guardar cambios en ${title}?`,
       documentName: "documento.txt",
       toolOptions: {
-        uppercase: "MAYUSCULAS",
-        lowercase: "minusculas",
+        uppercase: "MAYUS",
+        lowercase: "minus",
         titleCase: "Titulo",
-        removeEmptyLines: "Eliminar lineas vacias",
-        removeDuplicateLines: "Eliminar lineas duplicadas",
-        sortLines: "Ordenar lineas",
-        trimLines: "Limpiar espacios en lineas",
-        formatJson: "Formatear JSON",
+        removeEmptyLines: "Sin vacias",
+        removeDuplicateLines: "Unicas",
+        sortLines: "Ordenar",
+        trimLines: "Limpiar",
+        formatJson: "JSON",
       },
     },
     contact: {
