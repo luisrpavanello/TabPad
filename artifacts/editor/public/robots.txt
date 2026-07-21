@@ -1,3 +1,3 @@
 User-agent: *
 Allow: /
-Sitemap: https://tabpad.online/sitemap.xml
+Sitemap: https://www.tabpad.online/sitemap.xml

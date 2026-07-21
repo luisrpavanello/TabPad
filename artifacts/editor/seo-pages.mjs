@@ -2,14 +2,37 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 const distDir = path.resolve(import.meta.dirname, "dist/public");
-const siteUrl = "https://tabpad.online";
+const siteUrl = "https://www.tabpad.online";
+const lastModified = new Date().toISOString().slice(0, 10);
+const seoContent = JSON.parse(
+  await readFile(
+    path.resolve(import.meta.dirname, "src/seo-content.json"),
+    "utf8",
+  ),
+);
 
-const localeAlternates = [
-  { hreflang: "en", href: "https://tabpad.online/" },
-  { hreflang: "pt", href: "https://tabpad.online/pt/" },
-  { hreflang: "es", href: "https://tabpad.online/es/" },
-  { hreflang: "x-default", href: "https://tabpad.online/" },
+const alternateGroups = [
+  ["/", "/pt/", "/es/"],
+  [
+    "/notepad-online/",
+    "/pt/bloco-de-notas-online/",
+    "/es/bloc-de-notas-online/",
+  ],
+  ["/online-notepad/", "/pt/notas-online/", "/es/notas-online/"],
+  ["/text-editor-online/", "/pt/caderno-online/", "/es/cuaderno-online/"],
 ];
+
+function alternatesFor(page) {
+  const group =
+    alternateGroups.find((paths) => paths.includes(page.path)) ??
+    alternateGroups[0];
+  return [
+    { hreflang: "en", href: `${siteUrl}${group[0]}` },
+    { hreflang: "pt", href: `${siteUrl}${group[1]}` },
+    { hreflang: "es", href: `${siteUrl}${group[2]}` },
+    { hreflang: "x-default", href: `${siteUrl}${group[0]}` },
+  ];
+}
 
 const pages = [
   {
@@ -18,7 +41,7 @@ const pages = [
     ogLocale: "en_US",
     title: "TabPad - Online Notepad, Text Editor and Notes App",
     description:
-      "TabPad is a fast online notepad and text editor with tabs, autosave, Markdown preview and text tools. Write notes, edit text and format JSON for free.",
+      "TabPad is a fast online notepad and text editor with tabs, local autosave, search, word count and text tools. Write notes and format JSON for free.",
     keywords:
       "notepad online, online notepad, notepad, notes, notes app, text editor, online text editor, free notepad, markdown editor, word counter, json formatter",
     priority: "1.0",
@@ -29,7 +52,7 @@ const pages = [
     ogLocale: "en_US",
     title: "Notepad Online - Free Browser Notes and Text Editor | TabPad",
     description:
-      "Open a free notepad online with tabs, autosave, word count, Markdown preview and JSON formatting. TabPad is fast, private and browser-based.",
+      "Open a free notepad online with tabs, local autosave, word count, search and JSON formatting. TabPad is fast, private and browser-based.",
     keywords:
       "notepad online, online notepad, free online notepad, browser notepad, notes online, text editor online, quick notes",
     priority: "0.9",
@@ -40,7 +63,7 @@ const pages = [
     ogLocale: "en_US",
     title: "Online Notepad - Fast Notes, Tabs and Text Tools | TabPad",
     description:
-      "Use TabPad as an online notepad for quick notes, drafts, text cleanup and Markdown preview. No install required.",
+      "Use TabPad as an online notepad for quick notes, drafts, search and text cleanup. No install or account required.",
     keywords:
       "online notepad, notepad, notes, online notes, free notes app, text tools, markdown notes",
     priority: "0.9",
@@ -51,7 +74,7 @@ const pages = [
     ogLocale: "en_US",
     title: "Text Editor Online - Write, Clean and Format Text | TabPad",
     description:
-      "A clean text editor online for notes, plain text, Markdown and JSON formatting. Use tabs, autosave and text tools in your browser.",
+      "A clean text editor online for notes, plain text and JSON formatting. Use tabs, local autosave and text tools in your browser.",
     keywords:
       "text editor online, online text editor, edit text online, plain text editor, markdown editor, json formatter",
     priority: "0.85",
@@ -62,7 +85,7 @@ const pages = [
     ogLocale: "pt_BR",
     title: "TabPad - Bloco de Notas Online, Notas e Editor de Texto",
     description:
-      "TabPad e um bloco de notas online rapido com abas, salvamento automatico, preview Markdown e ferramentas de texto. Escreva notas e edite textos gratis.",
+      "TabPad é um bloco de notas online rápido com abas, salvamento local, busca e ferramentas de texto. Escreva notas e edite textos grátis.",
     keywords:
       "bloco de notas online, bloco de notas, notas online, notas, caderno online, caderno, texto, editor de texto online, contador de palavras, formatar json",
     priority: "0.95",
@@ -84,7 +107,7 @@ const pages = [
     ogLocale: "pt_BR",
     title: "Notas Online - Caderno e Editor de Texto Gratis | TabPad",
     description:
-      "Escreva notas online com abas, autosave, preview Markdown e ferramentas para limpar, ordenar e formatar textos.",
+      "Escreva notas online com abas, salvamento local, busca e ferramentas para limpar, ordenar e formatar textos.",
     keywords:
       "notas online, notas, caderno online, caderno, texto, editor de texto online, bloco de notas",
     priority: "0.85",
@@ -106,7 +129,7 @@ const pages = [
     ogLocale: "es_ES",
     title: "TabPad - Bloc de Notas Online, Notas y Editor de Texto",
     description:
-      "TabPad es un bloc de notas online rapido con pestanas, autoguardado, vista Markdown y herramientas de texto. Escribe notas y edita texto gratis.",
+      "TabPad es un bloc de notas online rápido con pestañas, guardado local, búsqueda y herramientas de texto. Escribe notas y edita texto gratis.",
     keywords:
       "bloc de notas online, bloc de notas, notas online, notas, cuaderno online, cuaderno, texto, editor de texto online, contador de palabras, formatear json",
     priority: "0.95",
@@ -128,7 +151,7 @@ const pages = [
     ogLocale: "es_ES",
     title: "Notas Online - Cuaderno y Editor de Texto Gratis | TabPad",
     description:
-      "Escribe notas online con pestanas, autoguardado, vista Markdown y herramientas para limpiar, ordenar y formatear texto.",
+      "Escribe notas online con pestañas, guardado local, búsqueda y herramientas para limpiar, ordenar y formatear texto.",
     keywords:
       "notas online, notas, cuaderno online, cuaderno, texto, bloc de notas online, editor de texto",
     priority: "0.85",
@@ -165,8 +188,8 @@ function replaceOrInsertMeta(html, selector, tag) {
   return html.replace("</head>", `    ${tag}\n  </head>`);
 }
 
-function alternatesHtml() {
-  return localeAlternates
+function alternatesHtml(page) {
+  return alternatesFor(page)
     .map(
       (alternate) =>
         `<link rel="alternate" hreflang="${alternate.hreflang}" href="${alternate.href}" />`,
@@ -175,28 +198,36 @@ function alternatesHtml() {
 }
 
 function structuredData(page) {
+  const content = seoContent[page.path];
   return {
     "@context": "https://schema.org",
-    "@type": "WebApplication",
-    name: "TabPad",
-    url: absoluteUrl(page),
-    applicationCategory: "ProductivityApplication",
-    operatingSystem: "Any",
-    inLanguage: page.lang,
-    offers: {
-      "@type": "Offer",
-      price: "0",
-      priceCurrency: "USD",
-    },
-    description: page.description,
-    featureList: [
-      "Online notepad",
-      "Tabbed text editor",
-      "Autosave",
-      "Markdown preview",
-      "Text tools",
-      "JSON formatter",
-      "Word counter",
+    "@graph": [
+      {
+        "@type": "WebApplication",
+        name: "TabPad",
+        url: absoluteUrl(page),
+        applicationCategory: "ProductivityApplication",
+        operatingSystem: "Any",
+        inLanguage: page.lang,
+        offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+        description: page.description,
+        featureList: [
+          "Tabbed text editor",
+          "Local autosave",
+          "Find and replace",
+          "Text tools",
+          "JSON formatter",
+          "Word counter",
+        ],
+      },
+      {
+        "@type": "FAQPage",
+        mainEntity: content.faqs.map((faq) => ({
+          "@type": "Question",
+          name: faq.question,
+          acceptedAnswer: { "@type": "Answer", text: faq.answer },
+        })),
+      },
     ],
   };
 }
@@ -206,10 +237,10 @@ function sitemapXml() {
     .map(
       (page) => `  <url>
     <loc>${absoluteUrl(page)}</loc>
-    <lastmod>2026-06-27</lastmod>
+    <lastmod>${lastModified}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>${page.priority}</priority>
-    ${localeAlternates
+    ${alternatesFor(page)
       .map(
         (alternate) =>
           `<xhtml:link rel="alternate" hreflang="${alternate.hreflang}" href="${alternate.href}" />`,
@@ -298,15 +329,36 @@ function localizedHtml(baseHtml, page) {
 
   return html.replace(
     "</head>",
-    `    <link rel="canonical" href="${canonical}" />\n    ${alternatesHtml()}\n    <script type="application/ld+json">${JSON.stringify(structuredData(page))}</script>\n  </head>`,
+    `    <link rel="canonical" href="${canonical}" />\n    ${alternatesHtml(page)}\n    <script type="application/ld+json">${JSON.stringify(structuredData(page))}</script>\n  </head>`,
   );
+}
+
+function escapeHtml(value) {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+
+function prerenderedContent(page) {
+  const content = seoContent[page.path];
+  return `<main data-seo-prerendered="true"><article>
+    <h1>${escapeHtml(content.title)}</h1>
+    <p>${escapeHtml(content.lead)}</p>
+    ${content.sections.map((section) => `<section><h2>${escapeHtml(section.heading)}</h2><p>${escapeHtml(section.text)}</p></section>`).join("")}
+    <section><h2>FAQ</h2>${content.faqs.map((faq) => `<details><summary>${escapeHtml(faq.question)}</summary><p>${escapeHtml(faq.answer)}</p></details>`).join("")}</section>
+  </article></main>`;
 }
 
 async function writePage(page, html) {
   const outputDir =
     page.path === "/" ? distDir : path.join(distDir, page.path.slice(1));
   await mkdir(outputDir, { recursive: true });
-  await writeFile(path.join(outputDir, "index.html"), html);
+  const withContent = html.replace(
+    '<div id="root"></div>',
+    `<div id="root">${prerenderedContent(page)}</div>`,
+  );
+  await writeFile(path.join(outputDir, "index.html"), withContent);
 }
 
 const baseHtml = await readFile(path.join(distDir, "index.html"), "utf8");
