@@ -8,7 +8,7 @@
     "build": "vite build --config vite.config.ts && node ./seo-pages.mjs",
     "serve": "vite preview --config vite.config.ts --host 0.0.0.0",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "lint": "prettier --check src/Editor.tsx src/i18n.tsx src/components/Layout.tsx src/components/ui/dialog.tsx src/lib/**/*.ts src/vite-env.d.ts",
+    "lint": "prettier --check src/App.tsx src/Editor.tsx src/i18n.tsx src/seo-content.json src/components/Layout.tsx src/components/SeoContent.tsx src/components/ui/dialog.tsx src/lib/**/*.ts src/vite-env.d.ts seo-pages.mjs",
     "test": "node --import tsx --test src/**/*.test.ts"
   },
   "devDependencies": {

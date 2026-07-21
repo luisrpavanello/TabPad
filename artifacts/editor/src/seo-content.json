@@ -1,0 +1,386 @@
+{
+  "/": {
+    "title": "Online Notepad and Text Editor",
+    "lead": "TabPad is a private, browser-based notepad for quick notes, drafts and text cleanup. Your open tabs are saved locally in your browser, so you can return to your work without creating an account.",
+    "sections": [
+      {
+        "heading": "A practical notepad for everyday writing",
+        "text": "Create multiple tabs, count words and lines, search and replace text, and keep drafts organized in one clean workspace. TabPad works well for meeting notes, temporary snippets, lists and longer plain-text documents."
+      },
+      {
+        "heading": "Local-first and easy to use",
+        "text": "Autosave stores your session in IndexedDB on your device. You can also open common text files and save documents back to disk when your browser supports file access. No note content is sent to the TabPad server."
+      },
+      {
+        "heading": "Useful text tools included",
+        "text": "Convert case, remove blank or duplicate lines, sort and trim lines, or format valid JSON. Tools can be applied to the whole document or only to selected text."
+      }
+    ],
+    "faqs": [
+      {
+        "question": "Is TabPad free?",
+        "answer": "Yes. The online notepad and its text tools are free to use."
+      },
+      {
+        "question": "Where are my notes stored?",
+        "answer": "Open tabs are autosaved locally in your browser using IndexedDB."
+      },
+      {
+        "question": "Can I save a real text file?",
+        "answer": "Yes. Use Save to download a file or write back to a selected file when supported by your browser."
+      }
+    ]
+  },
+  "/notepad-online/": {
+    "title": "Notepad Online with Tabs and Autosave",
+    "lead": "Use this online notepad to capture ideas immediately, keep several drafts open and recover your browser session automatically. It is designed for people who want a focused writing space without registration.",
+    "sections": [
+      {
+        "heading": "Multiple notes in browser tabs",
+        "text": "Each TabPad tab is an independent document. Rename tabs, reorder them by dragging, close documents safely and see which files still have changes that were not written to disk."
+      },
+      {
+        "heading": "Reliable local autosave",
+        "text": "After you type, TabPad saves the session locally with a short delay and reports whether it is saving, saved or unable to save. This reduces unnecessary writes while protecting work between visits."
+      },
+      {
+        "heading": "Open and save text files",
+        "text": "Work with TXT, Markdown, JSON, CSV and log files. File access stays under your control, and browsers that do not support direct file writing can download the document instead."
+      }
+    ],
+    "faqs": [
+      {
+        "question": "Do I need an account?",
+        "answer": "No. You can start writing immediately without signing in."
+      },
+      {
+        "question": "Does autosave upload my notes?",
+        "answer": "No. Session autosave is local to the browser on your device."
+      },
+      {
+        "question": "Can I use keyboard shortcuts?",
+        "answer": "Yes. New, open, save, close and find support familiar Ctrl or Command shortcuts."
+      }
+    ]
+  },
+  "/online-notepad/": {
+    "title": "Online Notepad for Quick Private Notes",
+    "lead": "TabPad provides a fast place for temporary notes, checklists, copied text and drafts. The editor opens directly, keeps the interface uncluttered and stores your session on the device you are using.",
+    "sections": [
+      {
+        "heading": "Start writing without setup",
+        "text": "There is no sign-up flow or document dashboard between you and the editor. Create a new tab, paste or type text, and return later on the same browser to continue."
+      },
+      {
+        "heading": "Find information inside long notes",
+        "text": "Search through the active document, move between matches, choose case-sensitive matching and replace one or every occurrence. The status bar also shows words, characters, lines and cursor position."
+      },
+      {
+        "heading": "Comfortable on light and dark screens",
+        "text": "Switch between light and dark themes and toggle line wrapping for long paragraphs or technical text. The responsive controls work on desktop and mobile browsers."
+      }
+    ],
+    "faqs": [
+      {
+        "question": "Is this suitable for sensitive notes?",
+        "answer": "Notes are stored locally, but you should still use a trusted device and avoid storing passwords or highly sensitive secrets in any browser notepad."
+      },
+      {
+        "question": "Will notes appear on another device?",
+        "answer": "No. Cloud synchronization is not enabled, so local sessions remain on the browser that created them."
+      },
+      {
+        "question": "Can I search and replace text?",
+        "answer": "Yes. Open Find with Ctrl or Command plus F to search and replace."
+      }
+    ]
+  },
+  "/text-editor-online/": {
+    "title": "Text Editor Online with Cleanup and JSON Tools",
+    "lead": "Edit plain text online and apply common cleanup operations without installing software. TabPad combines a distraction-free editor with tools for lists, copied data, logs and JSON.",
+    "sections": [
+      {
+        "heading": "Clean lists and pasted text",
+        "text": "Remove empty lines, eliminate duplicate lines, trim unwanted spaces and sort lines alphabetically. Apply a tool to selected text when only one part of the document needs to change."
+      },
+      {
+        "heading": "Format valid JSON",
+        "text": "Paste valid JSON and format it with two-space indentation for easier reading. Invalid JSON is left unchanged and TabPad explains common syntax requirements instead of silently damaging the text."
+      },
+      {
+        "heading": "Track document size and position",
+        "text": "Live counters report characters, words and lines while the status bar shows the current line and column. Word wrapping can be disabled when editing structured or wide text."
+      }
+    ],
+    "faqs": [
+      {
+        "question": "Which files can the editor open?",
+        "answer": "TabPad accepts TXT, MD, JSON, CSV and LOG files."
+      },
+      {
+        "question": "Can tools change only a selection?",
+        "answer": "Yes. Select a block before applying a text tool; otherwise the whole document is transformed."
+      },
+      {
+        "question": "Does JSON formatting validate the input?",
+        "answer": "Yes. Formatting only succeeds when the selected content is valid JSON."
+      }
+    ]
+  },
+  "/pt/": {
+    "title": "Bloco de Notas Online e Editor de Texto",
+    "lead": "O TabPad é um bloco de notas online simples para rascunhos, listas e textos. As abas abertas são salvas localmente no navegador, sem exigir cadastro e sem enviar o conteúdo das notas ao servidor.",
+    "sections": [
+      {
+        "heading": "Notas organizadas em abas",
+        "text": "Crie vários documentos, renomeie e reorganize as abas e continue escrevendo quando voltar ao mesmo navegador. O editor informa quando a sessão está sendo salva e quando um arquivo ainda possui alterações não gravadas no disco."
+      },
+      {
+        "heading": "Busca, substituição e contadores",
+        "text": "Localize palavras, navegue entre ocorrências e substitua uma ou todas. A barra inferior mostra caracteres, palavras, linhas e a posição atual do cursor."
+      },
+      {
+        "heading": "Ferramentas rápidas de texto",
+        "text": "Converta maiúsculas e minúsculas, remova linhas vazias ou duplicadas, ordene listas, limpe espaços e formate JSON válido."
+      }
+    ],
+    "faqs": [
+      {
+        "question": "O TabPad é gratuito?",
+        "answer": "Sim. O bloco de notas e as ferramentas de texto são gratuitos."
+      },
+      {
+        "question": "Onde as notas ficam salvas?",
+        "answer": "A sessão é salva localmente no navegador usando IndexedDB."
+      },
+      {
+        "question": "Preciso criar uma conta?",
+        "answer": "Não. Basta abrir o editor e começar a escrever."
+      }
+    ]
+  },
+  "/pt/bloco-de-notas-online/": {
+    "title": "Bloco de Notas Online Grátis com Abas",
+    "lead": "Escreva notas online sem cadastro, mantenha vários rascunhos em abas e conte com salvamento local automático. O TabPad foi criado para abrir rápido e deixar o texto em primeiro plano.",
+    "sections": [
+      {
+        "heading": "Salvamento automático confiável",
+        "text": "O conteúdo é gravado no IndexedDB do navegador após uma pequena pausa na digitação. O status diferencia uma sessão salva localmente de um arquivo que já foi salvo no disco."
+      },
+      {
+        "heading": "Abra e salve arquivos de texto",
+        "text": "Trabalhe com TXT, MD, JSON, CSV e LOG. Em navegadores compatíveis, o TabPad pode escrever no arquivo escolhido; nos demais, oferece o download do documento."
+      },
+      {
+        "heading": "Atalhos familiares",
+        "text": "Use Ctrl ou Command com N, O, S, W e F para criar, abrir, salvar, fechar e localizar, mantendo um fluxo semelhante ao de editores instalados."
+      }
+    ],
+    "faqs": [
+      {
+        "question": "O salvamento envia minhas notas para a internet?",
+        "answer": "Não. O autosave da sessão acontece localmente no dispositivo."
+      },
+      {
+        "question": "Posso abrir arquivos existentes?",
+        "answer": "Sim. Use o botão Abrir para selecionar formatos de texto comuns."
+      },
+      {
+        "question": "As notas sincronizam entre dispositivos?",
+        "answer": "Ainda não. Cada navegador mantém sua própria sessão local."
+      }
+    ]
+  },
+  "/pt/notas-online/": {
+    "title": "Notas Online para Ideias, Listas e Rascunhos",
+    "lead": "Use o TabPad para registrar ideias, listas, atas e textos temporários diretamente no navegador. A interface limpa reduz distrações e permite separar assuntos em diferentes abas.",
+    "sections": [
+      {
+        "heading": "Comece sem configuração",
+        "text": "Não há formulário de cadastro ou painel complexo. O editor aparece imediatamente e restaura a sessão local nas próximas visitas feitas no mesmo navegador."
+      },
+      {
+        "heading": "Encontre trechos rapidamente",
+        "text": "A busca mostra quantas ocorrências foram encontradas e permite substituição individual ou completa, com opção para diferenciar letras maiúsculas e minúsculas."
+      },
+      {
+        "heading": "Leitura confortável",
+        "text": "Escolha tema claro ou escuro e ative ou desative a quebra automática de linha conforme o tipo de texto que está editando."
+      }
+    ],
+    "faqs": [
+      {
+        "question": "Posso usar no celular?",
+        "answer": "Sim. A interface é responsiva e funciona em navegadores móveis modernos."
+      },
+      {
+        "question": "É possível recuperar a sessão?",
+        "answer": "As abas são restauradas enquanto os dados do site permanecerem armazenados no navegador."
+      },
+      {
+        "question": "Existe busca e substituição?",
+        "answer": "Sim. Pressione Ctrl ou Command mais F para abrir as ferramentas de busca."
+      }
+    ]
+  },
+  "/pt/caderno-online/": {
+    "title": "Caderno Online para Escrever e Organizar Textos",
+    "lead": "Transforme o navegador em um caderno online com várias páginas abertas em abas. O TabPad é útil para estudos, planejamento, anotações de reuniões e organização de pequenos textos.",
+    "sections": [
+      {
+        "heading": "Um espaço para cada assunto",
+        "text": "Renomeie abas com um duplo clique e arraste para mudar a ordem. Ao tentar fechar um arquivo alterado, escolha entre salvar, descartar ou continuar editando."
+      },
+      {
+        "heading": "Informações do documento em tempo real",
+        "text": "Acompanhe palavras, caracteres e linhas enquanto escreve. A indicação de linha e coluna facilita a revisão de textos e dados estruturados."
+      },
+      {
+        "heading": "Privacidade local",
+        "text": "O conteúdo do editor não é enviado ao backend do TabPad. Mesmo assim, use um dispositivo confiável e evite guardar senhas ou segredos críticos em qualquer bloco de notas do navegador."
+      }
+    ],
+    "faqs": [
+      {
+        "question": "O caderno funciona sem login?",
+        "answer": "Sim. Não é necessário criar conta."
+      },
+      {
+        "question": "Posso organizar várias páginas?",
+        "answer": "Sim. Cada aba funciona como uma página independente."
+      },
+      {
+        "question": "Como faço backup?",
+        "answer": "Salve os documentos importantes em arquivos no seu dispositivo."
+      }
+    ]
+  },
+  "/es/": {
+    "title": "Bloc de Notas Online y Editor de Texto",
+    "lead": "TabPad es un bloc de notas online para borradores, listas y texto sin formato. Las pestañas se guardan localmente en el navegador sin registro y sin enviar el contenido de las notas al servidor.",
+    "sections": [
+      {
+        "heading": "Documentos organizados en pestañas",
+        "text": "Crea, renombra y reordena varias notas. El estado indica cuándo la sesión está guardada localmente y cuándo un archivo todavía contiene cambios que no se escribieron en el disco."
+      },
+      {
+        "heading": "Búsqueda y reemplazo",
+        "text": "Encuentra texto, recorre coincidencias y reemplaza una o todas. También puedes ver caracteres, palabras, líneas y la posición del cursor."
+      },
+      {
+        "heading": "Herramientas de texto",
+        "text": "Cambia mayúsculas y minúsculas, elimina líneas vacías o duplicadas, ordena listas, limpia espacios y formatea JSON válido."
+      }
+    ],
+    "faqs": [
+      {
+        "question": "¿TabPad es gratis?",
+        "answer": "Sí. El editor y sus herramientas son gratuitos."
+      },
+      {
+        "question": "¿Dónde se guardan las notas?",
+        "answer": "La sesión se guarda localmente con IndexedDB en el navegador."
+      },
+      {
+        "question": "¿Necesito una cuenta?",
+        "answer": "No. Puedes empezar a escribir inmediatamente."
+      }
+    ]
+  },
+  "/es/bloc-de-notas-online/": {
+    "title": "Bloc de Notas Online Gratis con Pestañas",
+    "lead": "Escribe notas sin registro, conserva varios borradores y usa el guardado local automático. TabPad abre directamente el editor para que puedas concentrarte en el contenido.",
+    "sections": [
+      {
+        "heading": "Autoguardado local y transparente",
+        "text": "Después de una breve pausa al escribir, la sesión se guarda en IndexedDB. El indicador diferencia el guardado local del guardado de un archivo real en el dispositivo."
+      },
+      {
+        "heading": "Abre y guarda archivos",
+        "text": "Trabaja con archivos TXT, MD, JSON, CSV y LOG. Los navegadores compatibles permiten escribir en el archivo elegido y los demás pueden descargar una copia."
+      },
+      {
+        "heading": "Atajos de teclado conocidos",
+        "text": "Usa Ctrl o Command con N, O, S, W y F para crear, abrir, guardar, cerrar y buscar."
+      }
+    ],
+    "faqs": [
+      {
+        "question": "¿El autoguardado sube mis notas?",
+        "answer": "No. El contenido de la sesión permanece en el navegador."
+      },
+      {
+        "question": "¿Puedo abrir archivos existentes?",
+        "answer": "Sí. TabPad admite varios formatos de texto comunes."
+      },
+      {
+        "question": "¿Las notas se sincronizan?",
+        "answer": "Todavía no. Cada navegador mantiene su propia sesión."
+      }
+    ]
+  },
+  "/es/notas-online/": {
+    "title": "Notas Online para Ideas, Listas y Borradores",
+    "lead": "Captura ideas, listas, apuntes y textos temporales en una interfaz sencilla. Separa cada tema en una pestaña y vuelve a la sesión desde el mismo navegador.",
+    "sections": [
+      {
+        "heading": "Empieza sin configuración",
+        "text": "No hay formularios de registro ni paneles complejos. El editor aparece de inmediato y recupera los documentos locales en visitas posteriores."
+      },
+      {
+        "heading": "Encuentra fragmentos rápidamente",
+        "text": "La búsqueda cuenta las coincidencias y permite reemplazarlas de forma individual o completa, con una opción para distinguir mayúsculas y minúsculas."
+      },
+      {
+        "heading": "Una experiencia de lectura cómoda",
+        "text": "Alterna entre tema claro y oscuro y controla el ajuste de línea para párrafos largos o texto técnico."
+      }
+    ],
+    "faqs": [
+      {
+        "question": "¿Funciona en el móvil?",
+        "answer": "Sí. La interfaz se adapta a navegadores móviles modernos."
+      },
+      {
+        "question": "¿Se recuperan las pestañas?",
+        "answer": "Sí, mientras los datos del sitio permanezcan guardados en ese navegador."
+      },
+      {
+        "question": "¿Incluye buscar y reemplazar?",
+        "answer": "Sí. Abre la búsqueda con Ctrl o Command más F."
+      }
+    ]
+  },
+  "/es/cuaderno-online/": {
+    "title": "Cuaderno Online para Escribir y Organizar Texto",
+    "lead": "Convierte el navegador en un cuaderno con varias páginas abiertas. TabPad sirve para estudios, reuniones, planificación y organización de textos sencillos.",
+    "sections": [
+      {
+        "heading": "Una pestaña para cada tema",
+        "text": "Renombra documentos con doble clic y arrástralos para cambiar el orden. Al cerrar un archivo modificado puedes guardarlo, descartarlo o continuar editando."
+      },
+      {
+        "heading": "Información en tiempo real",
+        "text": "Consulta palabras, caracteres y líneas mientras escribes. La posición de línea y columna ayuda a revisar documentos y datos estructurados."
+      },
+      {
+        "heading": "Contenido privado en el dispositivo",
+        "text": "El texto no se envía al backend de TabPad. Utiliza de todos modos un dispositivo confiable y no guardes contraseñas o secretos críticos en un bloc del navegador."
+      }
+    ],
+    "faqs": [
+      {
+        "question": "¿El cuaderno funciona sin iniciar sesión?",
+        "answer": "Sí. No necesitas crear una cuenta."
+      },
+      {
+        "question": "¿Puedo organizar varias páginas?",
+        "answer": "Sí. Cada pestaña es un documento independiente."
+      },
+      {
+        "question": "¿Cómo creo una copia de seguridad?",
+        "answer": "Guarda los documentos importantes como archivos en tu dispositivo."
+      }
+    ]
+  }
+}

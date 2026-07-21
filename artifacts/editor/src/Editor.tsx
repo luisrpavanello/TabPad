@@ -445,9 +445,9 @@ export default function Editor() {
       className="flex h-[calc(100vh-3.5rem)] min-h-[420px] w-full flex-col bg-background"
       aria-labelledby="editor-heading"
     >
-      <h1 id="editor-heading" className="sr-only">
+      <h2 id="editor-heading" className="sr-only">
         {t.editor.heading}
-      </h1>
+      </h2>
       <div className="sticky top-14 z-40 shrink-0 bg-background">
         <div
           className="flex items-end overflow-x-auto border-b border-border bg-muted/60 px-2 pt-2 hide-scrollbar"

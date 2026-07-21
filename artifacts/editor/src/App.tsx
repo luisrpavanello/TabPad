@@ -8,7 +8,7 @@ import {
 } from "react-router-dom";
 import { Layout } from "@/components/Layout";
 import { getLocale, locales, type Locale } from "@/i18n";
-import Editor from "./Editor";
+import EditorPage from "@/components/SeoContent";
 import Contact from "@/pages/Contact";
 import NotFound from "@/pages/not-found";
 
@@ -27,20 +27,20 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Layout locale="en" />}>
-          <Route index element={<Editor />} />
-          <Route path="notepad-online" element={<Editor />} />
-          <Route path="online-notepad" element={<Editor />} />
-          <Route path="text-editor-online" element={<Editor />} />
+          <Route index element={<EditorPage />} />
+          <Route path="notepad-online" element={<EditorPage />} />
+          <Route path="online-notepad" element={<EditorPage />} />
+          <Route path="text-editor-online" element={<EditorPage />} />
           <Route path="contact" element={<Contact />} />
         </Route>
 
         <Route path="/:locale" element={<LocalizedLayout />}>
-          <Route index element={<Editor />} />
-          <Route path="bloco-de-notas-online" element={<Editor />} />
-          <Route path="bloc-de-notas-online" element={<Editor />} />
-          <Route path="notas-online" element={<Editor />} />
-          <Route path="caderno-online" element={<Editor />} />
-          <Route path="cuaderno-online" element={<Editor />} />
+          <Route index element={<EditorPage />} />
+          <Route path="bloco-de-notas-online" element={<EditorPage />} />
+          <Route path="bloc-de-notas-online" element={<EditorPage />} />
+          <Route path="notas-online" element={<EditorPage />} />
+          <Route path="caderno-online" element={<EditorPage />} />
+          <Route path="cuaderno-online" element={<EditorPage />} />
           <Route path="contact" element={<Contact />} />
         </Route>
 
