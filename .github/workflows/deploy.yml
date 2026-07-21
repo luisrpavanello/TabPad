@@ -33,11 +33,15 @@ jobs:
           node-version: 24
           cache: "pnpm"
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --frozen-lockfile
+      - name: Lint
+        run: pnpm run lint
+      - name: Test
+        run: pnpm run test
+      - name: Typecheck
+        run: pnpm run typecheck
       - name: Build editor
-        run: |
-          cd artifacts/editor
-          pnpm run build
+        run: pnpm --filter @workspace/editor run build
       - name: Setup Pages
         uses: actions/configure-pages@v4
       - name: Upload artifact
