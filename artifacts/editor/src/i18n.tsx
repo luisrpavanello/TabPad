@@ -11,6 +11,7 @@ type Dictionary = {
     language: string;
     onlineLabel: string;
     onlineLoading: string;
+    online: string;
     theme: string;
   };
   editor: {
@@ -31,6 +32,32 @@ type Dictionary = {
     discard: string;
     invalidJsonTitle: string;
     invalidJsonDescription: string;
+    heading: string;
+    tabsLabel: string;
+    textAreaLabel: string;
+    renameTab: string;
+    closeTab: (title: string) => string;
+    unsavedFile: string;
+    diskUnsaved: string;
+    saveBeforeCloseTitle: string;
+    saveAndClose: string;
+    find: string;
+    replace: string;
+    replaceAll: string;
+    findPlaceholder: string;
+    replacePlaceholder: string;
+    previousMatch: string;
+    nextMatch: string;
+    noMatches: string;
+    matchCase: string;
+    closeSearch: string;
+    close: string;
+    wordWrap: string;
+    lineColumn: (line: number, column: number) => string;
+    textFiles: string;
+    fileError: string;
+    errorTitle: string;
+    saveStatuses: Record<"loading" | "saving" | "saved" | "error", string>;
     closeConfirm: (title: string) => string;
     documentName: string;
     toolOptions: {
@@ -66,6 +93,7 @@ const dictionaries: Record<Locale, Dictionary> = {
       language: "Language",
       onlineLabel: "People online now",
       onlineLoading: "loading",
+      online: "online",
       theme: "Toggle theme",
     },
     editor: {
@@ -88,6 +116,38 @@ const dictionaries: Record<Locale, Dictionary> = {
       invalidJsonTitle: "Invalid JSON",
       invalidJsonDescription:
         'Format JSON only works with pure JSON, for example {"name":"TabPad"}. Keys and strings need double quotes, and trailing commas are not allowed. Select only the JSON block if the file has other text.',
+      heading: "TabPad text editor",
+      tabsLabel: "Open documents",
+      textAreaLabel: "Document content",
+      renameTab: "Rename tab",
+      closeTab: (title) => `Close ${title}`,
+      unsavedFile: "File has unsaved disk changes",
+      diskUnsaved: "not saved to disk",
+      saveBeforeCloseTitle: "Save changes before closing?",
+      saveAndClose: "Save and close",
+      find: "Find",
+      replace: "Replace",
+      replaceAll: "Replace all",
+      findPlaceholder: "Find text",
+      replacePlaceholder: "Replace with",
+      previousMatch: "Previous match",
+      nextMatch: "Next match",
+      noMatches: "No matches",
+      matchCase: "Match case",
+      closeSearch: "Close search",
+      close: "Close",
+      wordWrap: "Word wrap",
+      lineColumn: (line, column) => `Ln ${line}, Col ${column}`,
+      textFiles: "Text files",
+      fileError:
+        "The file could not be opened or saved. Check browser permissions and try again.",
+      errorTitle: "Unable to complete action",
+      saveStatuses: {
+        loading: "loading session",
+        saving: "saving locally…",
+        saved: "saved locally",
+        error: "local save failed",
+      },
       closeConfirm: (title) => `Save changes to ${title}?`,
       documentName: "document.txt",
       toolOptions: {
@@ -121,10 +181,11 @@ const dictionaries: Record<Locale, Dictionary> = {
       language: "Idioma",
       onlineLabel: "Pessoas online agora",
       onlineLoading: "carregando",
+      online: "online",
       theme: "Alternar tema",
     },
     editor: {
-      untitled: "Sem titulo",
+      untitled: "Sem título",
       newFile: "Novo arquivo",
       open: "Abrir",
       save: "Salvar",
@@ -135,15 +196,47 @@ const dictionaries: Record<Locale, Dictionary> = {
       lines: "linhas",
       words: "palavras",
       saved: "salvo automaticamente",
-      discardTitle: "Descartar alteracoes?",
+      discardTitle: "Descartar alterações?",
       discardDescription: (title) =>
-        `${title} tem alteracoes nao salvas. Fechar a aba vai descartar a edicao atual.`,
+        `${title} tem alterações não salvas no arquivo. Você pode salvar no disco antes de fechar.`,
       cancel: "Cancelar",
       discard: "Descartar",
-      invalidJsonTitle: "JSON invalido",
+      invalidJsonTitle: "JSON inválido",
       invalidJsonDescription:
-        'Formatar JSON funciona apenas com JSON puro, por exemplo {"nome":"TabPad"}. Chaves e textos precisam de aspas duplas, e virgula sobrando no final nao e permitida. Selecione apenas o bloco JSON se o arquivo tiver outros textos.',
-      closeConfirm: (title) => `Salvar alteracoes em ${title}?`,
+        'Formatar JSON funciona apenas com JSON puro, por exemplo {"nome":"TabPad"}. Chaves e textos precisam de aspas duplas, e vírgula sobrando no final não é permitida. Selecione apenas o bloco JSON se o arquivo tiver outros textos.',
+      heading: "Editor de texto TabPad",
+      tabsLabel: "Documentos abertos",
+      textAreaLabel: "Conteúdo do documento",
+      renameTab: "Renomear aba",
+      closeTab: (title) => `Fechar ${title}`,
+      unsavedFile: "Arquivo com alterações não salvas no disco",
+      diskUnsaved: "não salvo no disco",
+      saveBeforeCloseTitle: "Salvar alterações antes de fechar?",
+      saveAndClose: "Salvar e fechar",
+      find: "Localizar",
+      replace: "Substituir",
+      replaceAll: "Substituir tudo",
+      findPlaceholder: "Localizar texto",
+      replacePlaceholder: "Substituir por",
+      previousMatch: "Ocorrência anterior",
+      nextMatch: "Próxima ocorrência",
+      noMatches: "Nenhuma ocorrência",
+      matchCase: "Diferenciar maiúsculas",
+      closeSearch: "Fechar busca",
+      close: "Fechar",
+      wordWrap: "Quebra automática de linha",
+      lineColumn: (line, column) => `Lin ${line}, Col ${column}`,
+      textFiles: "Arquivos de texto",
+      fileError:
+        "Não foi possível abrir ou salvar o arquivo. Verifique as permissões do navegador e tente novamente.",
+      errorTitle: "Não foi possível concluir a ação",
+      saveStatuses: {
+        loading: "carregando sessão",
+        saving: "salvando localmente…",
+        saved: "salvo localmente",
+        error: "falha ao salvar localmente",
+      },
+      closeConfirm: (title) => `Salvar alterações em ${title}?`,
       documentName: "documento.txt",
       toolOptions: {
         uppercase: "MAIUS",
@@ -158,11 +251,11 @@ const dictionaries: Record<Locale, Dictionary> = {
     },
     contact: {
       title: "Contato",
-      description: "Tem perguntas ou feedback? Vamos gostar de ouvir voce.",
+      description: "Tem perguntas ou feedback? Vamos gostar de ouvir você.",
       email: "Email",
-      location: "Localizacao",
+      location: "Localização",
       locationValue: "Online - de qualquer lugar",
-      note: "Em breve voce tambem podera falar conosco pelo GitHub ou redes sociais.",
+      note: "Em breve você também poderá falar conosco pelo GitHub ou redes sociais.",
     },
     footer: {
       rights: "Todos os direitos reservados.",
@@ -176,10 +269,11 @@ const dictionaries: Record<Locale, Dictionary> = {
       language: "Idioma",
       onlineLabel: "Personas online ahora",
       onlineLoading: "cargando",
+      online: "en línea",
       theme: "Cambiar tema",
     },
     editor: {
-      untitled: "Sin titulo",
+      untitled: "Sin título",
       newFile: "Nuevo archivo",
       open: "Abrir",
       save: "Guardar",
@@ -187,18 +281,50 @@ const dictionaries: Record<Locale, Dictionary> = {
       applyTool: "Aplicar",
       edit: "Editar",
       chars: "caracteres",
-      lines: "lineas",
+      lines: "líneas",
       words: "palabras",
       saved: "guardado automatico",
-      discardTitle: "Descartar cambios?",
+      discardTitle: "¿Descartar cambios?",
       discardDescription: (title) =>
-        `${title} tiene cambios sin guardar. Cerrar la pestana descartara la edicion actual.`,
+        `${title} tiene cambios sin guardar en el archivo. Puedes guardarlo en el disco antes de cerrar.`,
       cancel: "Cancelar",
       discard: "Descartar",
-      invalidJsonTitle: "JSON invalido",
+      invalidJsonTitle: "JSON inválido",
       invalidJsonDescription:
-        'Formatear JSON solo funciona con JSON puro, por ejemplo {"nombre":"TabPad"}. Las claves y textos necesitan comillas dobles, y no se permiten comas finales. Selecciona solo el bloque JSON si el archivo tiene otros textos.',
-      closeConfirm: (title) => `Guardar cambios en ${title}?`,
+        'Formatear JSON solo funciona con JSON puro, por ejemplo {"nombre":"TabPad"}. Las claves y textos necesitan comillas dobles y no se permiten comas finales. Selecciona solo el bloque JSON si el archivo contiene otros textos.',
+      heading: "Editor de texto TabPad",
+      tabsLabel: "Documentos abiertos",
+      textAreaLabel: "Contenido del documento",
+      renameTab: "Renombrar pestaña",
+      closeTab: (title) => `Cerrar ${title}`,
+      unsavedFile: "Archivo con cambios sin guardar en el disco",
+      diskUnsaved: "no guardado en el disco",
+      saveBeforeCloseTitle: "¿Guardar cambios antes de cerrar?",
+      saveAndClose: "Guardar y cerrar",
+      find: "Buscar",
+      replace: "Reemplazar",
+      replaceAll: "Reemplazar todo",
+      findPlaceholder: "Buscar texto",
+      replacePlaceholder: "Reemplazar con",
+      previousMatch: "Coincidencia anterior",
+      nextMatch: "Siguiente coincidencia",
+      noMatches: "Sin coincidencias",
+      matchCase: "Distinguir mayúsculas",
+      closeSearch: "Cerrar búsqueda",
+      close: "Cerrar",
+      wordWrap: "Ajuste automático de línea",
+      lineColumn: (line, column) => `Lín ${line}, Col ${column}`,
+      textFiles: "Archivos de texto",
+      fileError:
+        "No se pudo abrir o guardar el archivo. Verifica los permisos del navegador e inténtalo de nuevo.",
+      errorTitle: "No se pudo completar la acción",
+      saveStatuses: {
+        loading: "cargando sesión",
+        saving: "guardando localmente…",
+        saved: "guardado localmente",
+        error: "falló el guardado local",
+      },
+      closeConfirm: (title) => `¿Guardar cambios en ${title}?`,
       documentName: "documento.txt",
       toolOptions: {
         uppercase: "MAYUS",
@@ -213,11 +339,12 @@ const dictionaries: Record<Locale, Dictionary> = {
     },
     contact: {
       title: "Contacto",
-      description: "Tienes preguntas o comentarios? Nos encantaria escucharte.",
+      description:
+        "¿Tienes preguntas o comentarios? Nos encantaría escucharte.",
       email: "Email",
-      location: "Ubicacion",
+      location: "Ubicación",
       locationValue: "Online - desde cualquier lugar",
-      note: "Pronto tambien podras contactarnos por GitHub o redes sociales.",
+      note: "Pronto también podrás contactarnos por GitHub o redes sociales.",
     },
     footer: {
       rights: "Todos los derechos reservados.",

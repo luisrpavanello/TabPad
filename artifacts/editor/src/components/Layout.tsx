@@ -66,10 +66,13 @@ function LayoutContent({
           >
             <span className="font-bold text-lg text-primary">TabPad</span>
           </Link>
-          <nav className="ml-auto flex items-center space-x-3">
+          <nav
+            className="ml-auto flex items-center gap-1 sm:gap-3"
+            aria-label={t.nav.editor}
+          >
             <Link
               to={getLocalePath(locale)}
-              className="text-sm font-medium hover:text-primary transition-colors"
+              className="hidden text-sm font-medium transition-colors hover:text-primary sm:block"
             >
               {t.nav.editor}
             </Link>
@@ -88,7 +91,9 @@ function LayoutContent({
             >
               <span className="h-2 w-2 rounded-full bg-emerald-500" />
               <Users size={14} aria-hidden="true" />
-              <span>{onlineUsers ?? "--"} online</span>
+              <span>
+                {onlineUsers ?? "--"} {t.nav.online}
+              </span>
             </div>
             <label className="flex h-8 items-center gap-1.5 rounded-sm border border-border bg-background px-2 text-xs text-muted-foreground">
               <Languages size={14} aria-hidden="true" />
@@ -115,6 +120,7 @@ function LayoutContent({
               onClick={toggleTheme}
               className="p-1.5 rounded-sm text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
               title={t.nav.theme}
+              aria-label={t.nav.theme}
             >
               {theme === "light" ? <Moon size={16} /> : <Sun size={16} />}
             </button>
