@@ -7,6 +7,7 @@ export const locales: Locale[] = ["en", "pt", "es"];
 type Dictionary = {
   nav: {
     editor: string;
+    about: string;
     contact: string;
     language: string;
     onlineLabel: string;
@@ -89,6 +90,7 @@ const dictionaries: Record<Locale, Dictionary> = {
   en: {
     nav: {
       editor: "Editor",
+      about: "About",
       contact: "Contact",
       language: "Language",
       onlineLabel: "People online now",
@@ -177,6 +179,7 @@ const dictionaries: Record<Locale, Dictionary> = {
   pt: {
     nav: {
       editor: "Editor",
+      about: "Sobre",
       contact: "Contato",
       language: "Idioma",
       onlineLabel: "Pessoas online agora",
@@ -265,6 +268,7 @@ const dictionaries: Record<Locale, Dictionary> = {
   es: {
     nav: {
       editor: "Editor",
+      about: "Acerca de",
       contact: "Contacto",
       language: "Idioma",
       onlineLabel: "Personas online ahora",

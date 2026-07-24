@@ -1,6 +1,5 @@
-import { useLocation } from "react-router-dom";
 import seoContent from "@/seo-content.json";
-import Editor from "@/Editor";
+import { useI18n } from "@/i18n";
 
 type SeoEntry = {
   title: string;
@@ -9,15 +8,10 @@ type SeoEntry = {
   faqs: Array<{ question: string; answer: string }>;
 };
 
-function normalizedPath(pathname: string) {
-  return pathname === "/" ? "/" : `${pathname.replace(/\/$/, "")}/`;
-}
-
 export function SeoContent() {
-  const { pathname } = useLocation();
-  const entry = (seoContent as Record<string, SeoEntry>)[
-    normalizedPath(pathname)
-  ];
+  const { locale } = useI18n();
+  const contentPath = locale === "en" ? "/" : `/${locale}/`;
+  const entry = (seoContent as Record<string, SeoEntry>)[contentPath];
 
   if (!entry) return null;
 
@@ -65,11 +59,6 @@ export function SeoContent() {
   );
 }
 
-export default function EditorPage() {
-  return (
-    <>
-      <Editor />
-      <SeoContent />
-    </>
-  );
+export default function AboutPage() {
+  return <SeoContent />;
 }

@@ -77,6 +77,12 @@ function LayoutContent({
               {t.nav.editor}
             </Link>
             <Link
+              to={getLocalePath(locale, "/about")}
+              className="text-sm font-medium hover:text-primary transition-colors"
+            >
+              {t.nav.about}
+            </Link>
+            <Link
               to={getLocalePath(locale, "/contact")}
               className="text-sm font-medium hover:text-primary transition-colors"
             >
