@@ -3,18 +3,12 @@ import {
   Check,
   Cloud,
   Clipboard,
-  Cpu,
   LoaderCircle,
   RefreshCw,
   Sparkles,
   X,
 } from "lucide-react";
 import { useI18n, type Locale } from "@/i18n";
-import {
-  getBrowserAiSupport,
-  humanizeInBrowser,
-  type BrowserProgress,
-} from "@/lib/browser-humanizer";
 import type { HumanizeTone as Tone } from "@/lib/humanizer-prompt";
 
 type Usage = { inputTokens: number; outputTokens: number; totalTokens: number };
@@ -47,16 +41,8 @@ const copy: Record<
     chars: string;
     words: string;
     error: string;
-    device: string;
     cloud: string;
-    private: string;
-    fast: string;
-    downloadNotice: string;
-    unsupported: string;
-    fallback: string;
-    auto: string;
     processing: string;
-    localError: string;
   }
 > = {
   en: {
@@ -90,17 +76,8 @@ const copy: Record<
     chars: "characters",
     words: "words",
     error: "Unable to humanize the text. Please try again.",
-    device: "On this device",
     cloud: "In the cloud",
-    private: "Private · Qwen 3.5 2B",
-    fast: "Faster · Gemini / Groq",
-    downloadNotice:
-      "First use downloads about 1–2 GB and stores it in your browser.",
-    unsupported: "WebGPU is unavailable or this device has limited memory.",
-    fallback: "Local processing failed; switched to the cloud automatically.",
-    auto: "Automatic",
     processing: "Processing",
-    localError: "Local processing failed. Your text was not sent to the cloud.",
   },
   pt: {
     title: "Humanizador com IA",
@@ -133,19 +110,8 @@ const copy: Record<
     chars: "caracteres",
     words: "palavras",
     error: "Não foi possível humanizar o texto. Tente novamente.",
-    device: "Neste dispositivo",
     cloud: "Na nuvem",
-    private: "Privado · Qwen 3.5 2B",
-    fast: "Mais rápido · Gemini / Groq",
-    downloadNotice:
-      "O primeiro uso baixa cerca de 1–2 GB e armazena no navegador.",
-    unsupported: "WebGPU indisponível ou dispositivo com memória limitada.",
-    fallback:
-      "O processamento local falhou; mudamos automaticamente para a nuvem.",
-    auto: "Automático",
     processing: "Processamento",
-    localError:
-      "O processamento local falhou. Seu texto não foi enviado à nuvem.",
   },
   es: {
     title: "Humanizador con IA",
@@ -179,20 +145,8 @@ const copy: Record<
     chars: "caracteres",
     words: "palabras",
     error: "No se pudo humanizar el texto. Inténtalo de nuevo.",
-    device: "En este dispositivo",
     cloud: "En la nube",
-    private: "Privado · Qwen 3.5 2B",
-    fast: "Más rápido · Gemini / Groq",
-    downloadNotice:
-      "El primer uso descarga cerca de 1–2 GB y lo guarda en el navegador.",
-    unsupported:
-      "WebGPU no está disponible o el dispositivo tiene poca memoria.",
-    fallback:
-      "El procesamiento local falló; cambiamos automáticamente a la nube.",
-    auto: "Automático",
     processing: "Procesamiento",
-    localError:
-      "El procesamiento local falló. Tu texto no fue enviado a la nube.",
   },
 };
 
@@ -220,10 +174,6 @@ export function Humanizer({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);
-  const support = useMemo(() => getBrowserAiSupport(), []);
-  const [mode, setMode] = useState<"auto" | "device" | "cloud">("auto");
-  const [browserProgress, setBrowserProgress] =
-    useState<BrowserProgress | null>(null);
   const [provider, setProvider] = useState<string | null>(null);
 
   useEffect(() => setSource(initialText), [initialText]);
@@ -269,28 +219,8 @@ export function Humanizer({
     setError("");
     setUsage(null);
     setCopied(false);
-    setBrowserProgress(null);
     setProvider(null);
     try {
-      if (mode !== "cloud" && support.supported) {
-        try {
-          setResult(
-            await humanizeInBrowser(
-              clean,
-              tone,
-              intensity,
-              preserveMarkdown,
-              setBrowserProgress,
-            ),
-          );
-          setProvider("qwen-webgpu");
-          return;
-        } catch {
-          if (mode === "device") throw new Error(t.localError);
-          setMode("cloud");
-          setError(t.fallback);
-        }
-      }
       setResult(await humanizeCloud(clean));
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : t.error);
@@ -333,34 +263,9 @@ export function Humanizer({
       <div className="flex flex-wrap items-end gap-3 border-b bg-muted/30 px-4 py-3">
         <div className="grid gap-1 text-xs font-medium">
           <span>{t.processing}</span>
-          <div className="flex h-9 rounded-sm border bg-background p-0.5">
-            <button
-              type="button"
-              onClick={() => setMode("auto")}
-              className={`flex items-center gap-1.5 rounded-sm px-2 text-xs ${mode === "auto" ? "bg-primary text-primary-foreground" : ""}`}
-            >
-              <Sparkles size={14} />
-              {t.auto}
-            </button>
-            <button
-              type="button"
-              disabled={!support.supported}
-              onClick={() => setMode("device")}
-              className={`flex items-center gap-1.5 rounded-sm px-2 text-xs disabled:opacity-40 ${mode === "device" ? "bg-primary text-primary-foreground" : ""}`}
-              title={support.supported ? t.private : t.unsupported}
-            >
-              <Cpu size={14} />
-              {t.device}
-            </button>
-            <button
-              type="button"
-              onClick={() => setMode("cloud")}
-              className={`flex items-center gap-1.5 rounded-sm px-2 text-xs ${mode === "cloud" ? "bg-primary text-primary-foreground" : ""}`}
-              title={t.fast}
-            >
-              <Cloud size={14} />
-              {t.cloud}
-            </button>
+          <div className="flex h-9 items-center gap-1.5 rounded-sm border bg-background px-3 text-xs text-muted-foreground">
+            <Cloud size={14} className="text-primary" />
+            {t.cloud} · Gemini / Groq
           </div>
         </div>
         <label className="grid gap-1 text-xs font-medium">
@@ -411,29 +316,6 @@ export function Humanizer({
           {loading ? t.humanizing : t.humanize}
         </button>
       </div>
-
-      {(mode === "device" || (mode === "auto" && support.supported)) && (
-        <div className="border-b bg-primary/5 px-4 py-2 text-xs text-muted-foreground">
-          {browserProgress?.status === "downloading"
-            ? `${t.downloadNotice} ${browserProgress.percent}%`
-            : browserProgress?.status === "generating"
-              ? t.humanizing
-              : t.downloadNotice}
-          {browserProgress?.status === "downloading" && (
-            <div className="mt-1 h-1 overflow-hidden rounded bg-muted">
-              <div
-                className="h-full bg-primary transition-all"
-                style={{ width: `${browserProgress.percent}%` }}
-              />
-            </div>
-          )}
-        </div>
-      )}
-      {!support.supported && (
-        <div className="border-b bg-muted/30 px-4 py-2 text-xs text-muted-foreground">
-          {t.unsupported} {t.fast}
-        </div>
-      )}
 
       {error && (
         <div

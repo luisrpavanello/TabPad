@@ -72,9 +72,6 @@ allowBuilds:
   '@swc/core': true
   esbuild: true
   msw: true
-  onnxruntime-node: false
-  protobufjs: false
-  sharp: false
   unrs-resolver: true
 
 overrides:

@@ -96,7 +96,7 @@ ollama serve
 
 Ollama listens on `127.0.0.1:11434` by default. Keep it private; do not expose the Ollama port directly to the public internet. In production, the Express API must be able to reach the Ollama host over a trusted private network.
 
-The editor also offers private in-browser processing with Qwen 3.5 2B in 4-bit precision through WebGPU. The first use downloads roughly 1–2 GB into the browser cache. Unsupported or low-memory devices automatically use the cloud endpoint. In production, `auto` never attempts localhost Ollama unless `AI_PROVIDER=ollama` is explicitly set.
+The editor humanizer always uses the configured API endpoint. In production, `auto` tries Gemini and then Groq; it never attempts localhost Ollama unless `AI_PROVIDER=ollama` is explicitly set.
 
 ## Running the Project
 
