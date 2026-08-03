@@ -513,7 +513,7 @@ export default function Editor() {
                 )}
                 {tab.isDirty && (
                   <span
-                    className="mx-2 h-2 w-2 rounded-full bg-primary"
+                    className="mx-2 h-2 w-2 rounded-full bg-yellow-400 shadow-[0_0_0_1px_rgba(113,63,18,0.2)] dark:bg-yellow-300"
                     aria-label={t.editor.unsavedFile}
                   />
                 )}

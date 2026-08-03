@@ -64,6 +64,14 @@ function LayoutContent({
             to={getLocalePath(locale)}
             className="flex items-center space-x-2"
           >
+            <img
+              src="/favicon.svg"
+              alt=""
+              width="28"
+              height="28"
+              className="h-7 w-7 rounded-md"
+              aria-hidden="true"
+            />
             <span className="font-bold text-lg text-primary">TabPad</span>
           </Link>
           <nav

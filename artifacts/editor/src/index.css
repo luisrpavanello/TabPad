@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap");
 @import "tailwindcss";
 @import "tw-animate-css";
 @plugin "@tailwindcss/typography";
@@ -51,75 +51,77 @@
 }
 
 :root {
-  /* Warm off-white / slate theme */
-  --background: 40 33% 98%; 
-  --foreground: 20 14% 15%;
+  /* Light: white canvas with navy typography and controls */
+  --background: 0 0% 100%;
+  --foreground: 222 47% 11%;
 
-  --border: 40 10% 85%;
-  --input: 40 10% 85%;
-  --ring: 35 100% 50%; /* Amber accent */
+  --border: 220 24% 88%;
+  --input: 220 24% 88%;
+  --ring: 222 72% 32%;
 
-  --card: 40 33% 98%;
-  --card-foreground: 20 14% 15%;
-  --card-border: 40 10% 85%;
+  --card: 0 0% 100%;
+  --card-foreground: 222 47% 11%;
+  --card-border: 220 24% 88%;
 
-  --popover: 40 33% 98%;
-  --popover-foreground: 20 14% 15%;
-  --popover-border: 40 10% 85%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 222 47% 11%;
+  --popover-border: 220 24% 88%;
 
-  --primary: 35 100% 50%; /* Amber */
-  --primary-foreground: 40 33% 98%;
+  --primary: 222 72% 28%;
+  --primary-foreground: 0 0% 100%;
 
-  --secondary: 40 10% 90%;
-  --secondary-foreground: 20 14% 15%;
+  --secondary: 220 35% 95%;
+  --secondary-foreground: 222 47% 11%;
 
-  --muted: 40 10% 94%;
-  --muted-foreground: 20 10% 45%;
+  --muted: 220 33% 97%;
+  --muted-foreground: 218 18% 42%;
 
-  --accent: 40 20% 90%;
-  --accent-foreground: 20 14% 15%;
+  --accent: 220 45% 93%;
+  --accent-foreground: 222 62% 22%;
 
   --destructive: 0 84% 60%;
   --destructive-foreground: 0 0% 100%;
 
-  --app-font-sans: 'Inter', sans-serif;
+  --app-font-sans: "Inter", sans-serif;
   --app-font-serif: Georgia, serif;
-  --app-font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-  
+  --app-font-mono:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+    "Courier New", monospace;
+
   --radius: 0.3rem;
 }
 
 .dark {
-  /* Navy dark theme */
-  --background: 222 47% 9%;
-  --foreground: 214 32% 91%;
+  /* Dark: deep navy canvas with crisp white controls */
+  --background: 222 58% 8%;
+  --foreground: 0 0% 98%;
 
-  --border: 217 33% 20%;
-  --input: 217 33% 20%;
-  --ring: 35 100% 50%;
+  --border: 218 39% 22%;
+  --input: 218 39% 22%;
+  --ring: 0 0% 100%;
 
-  --card: 222 42% 12%;
-  --card-foreground: 214 32% 91%;
-  --card-border: 217 33% 20%;
+  --card: 222 52% 11%;
+  --card-foreground: 0 0% 98%;
+  --card-border: 218 39% 22%;
 
-  --popover: 222 42% 12%;
-  --popover-foreground: 214 32% 91%;
-  --popover-border: 217 33% 20%;
+  --popover: 222 52% 11%;
+  --popover-foreground: 0 0% 98%;
+  --popover-border: 218 39% 22%;
 
-  --primary: 35 90% 45%;
-  --primary-foreground: 222 47% 9%;
+  --primary: 0 0% 100%;
+  --primary-foreground: 222 58% 10%;
 
-  --secondary: 217 33% 18%;
-  --secondary-foreground: 214 32% 91%;
+  --secondary: 220 42% 17%;
+  --secondary-foreground: 0 0% 98%;
 
-  --muted: 220 35% 15%;
-  --muted-foreground: 215 20% 65%;
+  --muted: 220 43% 14%;
+  --muted-foreground: 216 20% 72%;
 
-  --accent: 217 33% 22%;
-  --accent-foreground: 214 32% 91%;
+  --accent: 218 42% 21%;
+  --accent-foreground: 0 0% 100%;
 
   --destructive: 0 62% 30%;
-  --destructive-foreground: 214 32% 91%;
+  --destructive-foreground: 0 0% 100%;
 }
 
 @layer base {
