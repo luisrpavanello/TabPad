@@ -72,10 +72,12 @@ onlyBuiltDependencies:
   - '@swc/core'
   - esbuild
   - msw
+  - unrs-resolver
+
+ignoredBuiltDependencies:
   - onnxruntime-node
   - protobufjs
   - sharp
-  - unrs-resolver
 
 overrides:
   # replit uses linux-x64 only, we can exclude all other platforms
