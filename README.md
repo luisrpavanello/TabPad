@@ -37,6 +37,13 @@ API_PORT=5001
 EDITOR_PORT=5173
 MOCKUP_PORT=5174
 BASE_PATH=/
+OLLAMA_BASE_URL=http://127.0.0.1:11434
+OLLAMA_MODEL=gemma3:4b
+AI_PROVIDER=auto
+GEMINI_API_KEY=<optional-cloud-key>
+GEMINI_MODEL=gemini-3.5-flash
+GROQ_API_KEY=<optional-fallback-key>
+GROQ_MODEL=llama-3.3-70b-versatile
 ```
 
 Notes:
@@ -45,6 +52,11 @@ Notes:
 - `API_PORT` is used by the Express API during local development.
 - `EDITOR_PORT` is used by the main Vite editor during local development.
 - `MOCKUP_PORT` is used by the mockup sandbox during local development.
+- `OLLAMA_BASE_URL` points the API server to the local or private Ollama instance.
+- `OLLAMA_MODEL` is optional and defaults to `gemma3:4b`.
+- `AI_PROVIDER=auto` tries Gemini, then Groq, and uses Ollama during local development.
+- `GEMINI_API_KEY` enables the primary cloud provider.
+- `GROQ_API_KEY` enables the cloud fallback when Gemini is unavailable or rate-limited.
 - The API still supports `PORT`, but for local development prefer `API_PORT` so it does not conflict with frontend tooling.
 
 ### Production
@@ -62,11 +74,29 @@ If the frontend is deployed to GitHub Pages, remember that GitHub Pages is stati
 
 ```env
 VITE_API_BASE_URL=https://<your-api-host>
+OLLAMA_BASE_URL=http://<your-private-ollama-host>:11434
+OLLAMA_MODEL=gemma3:4b
+AI_PROVIDER=auto
+GEMINI_API_KEY=<production-secret>
+GROQ_API_KEY=<production-fallback-secret>
 ```
 
 Example: if the API is deployed at `https://tabpad-api.example.com`, the production editor will call `https://tabpad-api.example.com/api/online` for the online counter.
 
 Do not commit production secrets to `.env`, README, or source files.
+
+The humanizer sends submitted text only to the configured Ollama instance. The API limits input to 12,000 characters and ten requests per client IP per minute. No humanized text is written to the TabPad database.
+
+Install and prepare Ollama before using the humanizer:
+
+```bash
+ollama pull gemma3:4b
+ollama serve
+```
+
+Ollama listens on `127.0.0.1:11434` by default. Keep it private; do not expose the Ollama port directly to the public internet. In production, the Express API must be able to reach the Ollama host over a trusted private network.
+
+The editor also offers private in-browser processing with Qwen 3.5 2B in 4-bit precision through WebGPU. The first use downloads roughly 1–2 GB into the browser cache. Unsupported or low-memory devices automatically use the cloud endpoint. In production, `auto` never attempts localhost Ollama unless `AI_PROVIDER=ollama` is explicitly set.
 
 ## Running the Project
 

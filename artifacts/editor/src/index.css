@@ -90,36 +90,36 @@
 }
 
 .dark {
-  /* Warm dark slate */
-  --background: 24 10% 10%;
-  --foreground: 40 20% 90%;
+  /* Navy dark theme */
+  --background: 222 47% 9%;
+  --foreground: 214 32% 91%;
 
-  --border: 24 10% 20%;
-  --input: 24 10% 20%;
+  --border: 217 33% 20%;
+  --input: 217 33% 20%;
   --ring: 35 100% 50%;
 
-  --card: 24 10% 12%;
-  --card-foreground: 40 20% 90%;
-  --card-border: 24 10% 20%;
+  --card: 222 42% 12%;
+  --card-foreground: 214 32% 91%;
+  --card-border: 217 33% 20%;
 
-  --popover: 24 10% 12%;
-  --popover-foreground: 40 20% 90%;
-  --popover-border: 24 10% 20%;
+  --popover: 222 42% 12%;
+  --popover-foreground: 214 32% 91%;
+  --popover-border: 217 33% 20%;
 
   --primary: 35 90% 45%;
-  --primary-foreground: 24 10% 10%;
+  --primary-foreground: 222 47% 9%;
 
-  --secondary: 24 10% 20%;
-  --secondary-foreground: 40 20% 90%;
+  --secondary: 217 33% 18%;
+  --secondary-foreground: 214 32% 91%;
 
-  --muted: 24 10% 15%;
-  --muted-foreground: 40 10% 60%;
+  --muted: 220 35% 15%;
+  --muted-foreground: 215 20% 65%;
 
-  --accent: 24 10% 22%;
-  --accent-foreground: 40 20% 90%;
+  --accent: 217 33% 22%;
+  --accent-foreground: 214 32% 91%;
 
   --destructive: 0 62% 30%;
-  --destructive-foreground: 40 20% 90%;
+  --destructive-foreground: 214 32% 91%;
 }
 
 @layer base {

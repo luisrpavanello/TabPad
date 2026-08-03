@@ -10,6 +10,8 @@ servers:
 tags:
   - name: health
     description: Health operations
+  - name: humanization
+    description: AI-assisted text rewriting
 paths:
   /healthz:
     get:
@@ -24,6 +26,32 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+  /humanize:
+    post:
+      operationId: humanizeText
+      tags: [humanization]
+      summary: Humanize text with AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/HumanizeRequest"
+      responses:
+        "200":
+          description: Humanized text and token consumption
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HumanizeResponse"
+        "400":
+          description: Invalid request
+        "429":
+          description: Rate limit reached
+        "502":
+          description: AI provider unavailable
+        "503":
+          description: AI provider not configured
 components:
   schemas:
     HealthStatus:
@@ -33,4 +61,41 @@ components:
           type: string
       required:
         - status
-
+    HumanizeRequest:
+      type: object
+      properties:
+        text:
+          type: string
+          minLength: 1
+          maxLength: 12000
+        tone:
+          type: string
+          enum: [natural, professional, casual, academic]
+        intensity:
+          type: integer
+          minimum: 1
+          maximum: 3
+        preserveMarkdown:
+          type: boolean
+      required: [text, tone, intensity, preserveMarkdown]
+    HumanizeUsage:
+      type: object
+      properties:
+        inputTokens:
+          type: integer
+        outputTokens:
+          type: integer
+        totalTokens:
+          type: integer
+      required: [inputTokens, outputTokens, totalTokens]
+    HumanizeResponse:
+      type: object
+      properties:
+        result:
+          type: string
+        usage:
+          $ref: "#/components/schemas/HumanizeUsage"
+        provider:
+          type: string
+          enum: [gemini, groq, ollama]
+      required: [result, usage, provider]

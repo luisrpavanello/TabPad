@@ -42,6 +42,7 @@ import {
   saveEditorState,
   type PersistedEditorState,
 } from "@/lib/editor-storage";
+import { Humanizer } from "@/components/Humanizer";
 
 const autosaveDelayMs = 500;
 const generateId = () =>
@@ -92,7 +93,7 @@ function countWords(value: string) {
 }
 
 export default function Editor() {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const hydrated = useRef(false);
   const initialTab = useMemo(() => createEmptyTab(t.editor.untitled), []);
@@ -118,6 +119,7 @@ export default function Editor() {
   const [matchCase, setMatchCase] = useState(false);
   const [matchIndex, setMatchIndex] = useState(-1);
   const [cursorOffset, setCursorOffset] = useState(0);
+  const [humanizerOpen, setHumanizerOpen] = useState(false);
 
   const matches = useMemo(
     () => findMatches(activeTab?.content ?? "", searchQuery, matchCase),
@@ -560,6 +562,20 @@ export default function Editor() {
             </button>
           </div>
           <div className="flex min-w-0 flex-1 items-center justify-end gap-2">
+            <button
+              onClick={() => setHumanizerOpen((open) => !open)}
+              className={`inline-flex h-8 items-center gap-1.5 rounded-sm border px-2.5 text-xs font-medium ${humanizerOpen ? "border-primary bg-primary/10 text-primary" : "border-border hover:bg-accent"}`}
+              aria-pressed={humanizerOpen}
+            >
+              <Sparkles size={14} />
+              <span>
+                {
+                  { en: "Humanize AI", pt: "Humanizar IA", es: "Humanizar IA" }[
+                    locale
+                  ]
+                }
+              </span>
+            </button>
             <label className="relative flex h-8 min-w-[148px] max-w-[190px] flex-1 items-center rounded-sm border border-border bg-muted/30 text-xs sm:flex-none">
               <span className="flex h-full w-8 items-center justify-center border-r">
                 <Sparkles size={14} aria-hidden />
@@ -683,20 +699,34 @@ export default function Editor() {
         )}
       </div>
 
-      <div className="relative flex-1 overflow-hidden">
-        <textarea
-          ref={textareaRef}
-          value={activeTab?.content ?? ""}
-          onChange={(e) =>
-            updateTab(activeTab.id, { content: e.target.value, isDirty: true })
-          }
-          onSelect={(e) => setCursorOffset(e.currentTarget.selectionStart)}
-          aria-label={t.editor.textAreaLabel}
-          className={`absolute inset-0 h-full w-full resize-none bg-transparent p-6 font-mono text-sm leading-relaxed outline-none ${wordWrap ? "whitespace-pre-wrap" : "whitespace-pre overflow-auto"}`}
-          wrap={wordWrap ? "soft" : "off"}
-          spellCheck={false}
+      {humanizerOpen ? (
+        <Humanizer
+          initialText={activeTab?.content ?? ""}
+          onClose={() => setHumanizerOpen(false)}
+          onReplace={(content) => {
+            updateTab(activeTab.id, { content, isDirty: true });
+            setHumanizerOpen(false);
+          }}
         />
-      </div>
+      ) : (
+        <div className="relative flex-1 overflow-hidden">
+          <textarea
+            ref={textareaRef}
+            value={activeTab?.content ?? ""}
+            onChange={(e) =>
+              updateTab(activeTab.id, {
+                content: e.target.value,
+                isDirty: true,
+              })
+            }
+            onSelect={(e) => setCursorOffset(e.currentTarget.selectionStart)}
+            aria-label={t.editor.textAreaLabel}
+            className={`absolute inset-0 h-full w-full resize-none bg-transparent p-6 font-mono text-sm leading-relaxed outline-none ${wordWrap ? "whitespace-pre-wrap" : "whitespace-pre overflow-auto"}`}
+            wrap={wordWrap ? "soft" : "off"}
+            spellCheck={false}
+          />
+        </div>
+      )}
 
       <div className="flex h-7 shrink-0 items-center justify-between border-t bg-muted/40 px-4 text-[11px] text-muted-foreground">
         <div className="flex min-w-0 items-center gap-2">
