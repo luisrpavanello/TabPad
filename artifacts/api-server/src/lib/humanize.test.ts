@@ -38,3 +38,23 @@ test("extracts text and token usage from an Ollama result", () => {
     totalTokens: 20,
   });
 });
+
+test("adds deep conversational guidance only for casual strong rewrites", () => {
+  const strong = buildHumanizeInstructions({
+    text: "Original",
+    tone: "casual",
+    intensity: 3,
+    preserveMarkdown: false,
+  });
+  const balanced = buildHumanizeInstructions({
+    text: "Original",
+    tone: "casual",
+    intensity: 2,
+    preserveMarkdown: false,
+  });
+
+  assert.match(strong, /strongly conversational rewrite/);
+  assert.match(strong, /Okay, so/);
+  assert.match(strong, /hands-on stuff/);
+  assert.doesNotMatch(balanced, /strongly conversational rewrite/);
+});

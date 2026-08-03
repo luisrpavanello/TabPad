@@ -34,12 +34,27 @@ const intensityGuidance = [
   "Rewrite substantially. Rebuild awkward passages and vary paragraph rhythm while preserving every fact and claim.",
 ];
 
+function conversationalGuidance(input: HumanizeInput) {
+  if (input.tone !== "casual" || input.intensity !== 3) return "";
+
+  return [
+    "Use a strongly conversational rewrite rather than a polished paraphrase.",
+    "Reorganize the explanation from the ground up: change how ideas open, connect, and conclude instead of following the source sentence by sentence.",
+    "When it fits the source language, use a natural informal opener, light hesitation, or framing phrase such as 'Okay, so', 'sort of', 'basically', 'I mean', or an equivalent—but vary the choice and never stack or repeat fillers mechanically.",
+    "Allow an occasional brief aside or purposeful sentence fragment, followed by a clearer explanation. Keep both readable and grammatically intentional.",
+    "Prefer everyday expressions over institutional wording: for example, 'hands-on stuff' instead of 'practical activities' or 'workable steps' instead of 'actionable recommendations', when the audience permits it.",
+    "Make the paragraph shapes asymmetric. One idea may get a short standalone sentence while another unfolds across a longer conversational passage.",
+    "Keep punctuation natural and correct. Do not imitate typos, random spaces, or damaged grammar.",
+  ].join("\n");
+}
+
 export function buildHumanizeInstructions(input: HumanizeInput) {
   return [
     "You are an expert human editor. Rewrite the supplied text so it sounds authored by a real person with a distinct, context-appropriate voice, not like generic polished copy.",
     "Preserve the original meaning, facts, names, numbers, citations, and language. Do not add claims.",
     toneGuidance[input.tone],
     intensityGuidance[input.intensity - 1],
+    conversationalGuidance(input),
     "Vary sentence length and cadence. Mix concise statements with longer reflective sentences when natural.",
     "Prefer concrete, idiomatic wording. Remove stock transitions, repetitive summaries, inflated formality, symmetrical lists, and other formulaic phrasing.",
     "Use occasional conversational bridges, contractions, qualifications, or brief asides only when they fit the selected tone and source language. Never force slang.",
