@@ -119,7 +119,22 @@ export default function Editor() {
   const [matchCase, setMatchCase] = useState(false);
   const [matchIndex, setMatchIndex] = useState(-1);
   const [cursorOffset, setCursorOffset] = useState(0);
-  const [humanizerOpen, setHumanizerOpen] = useState(false);
+  const [humanizerTabIds, setHumanizerTabIds] = useState<string[]>([]);
+  const humanizerOpen = humanizerTabIds.includes(activeTab.id);
+
+  const setActiveHumanizerOpen = useCallback(
+    (open: boolean | ((current: boolean) => boolean)) => {
+      setHumanizerTabIds((currentIds) => {
+        const current = currentIds.includes(activeTab.id);
+        const next = typeof open === "function" ? open(current) : open;
+        if (next === current) return currentIds;
+        return next
+          ? [...currentIds, activeTab.id]
+          : currentIds.filter((id) => id !== activeTab.id);
+      });
+    },
+    [activeTab.id],
+  );
 
   const matches = useMemo(
     () => findMatches(activeTab?.content ?? "", searchQuery, matchCase),
@@ -202,6 +217,7 @@ export default function Editor() {
 
   const removeTab = useCallback(
     (id: string) => {
+      setHumanizerTabIds((current) => current.filter((tabId) => tabId !== id));
       setEditorState((prev) => {
         const index = prev.tabs.findIndex((tab) => tab.id === id);
         const remaining = prev.tabs.filter((tab) => tab.id !== id);
@@ -563,7 +579,7 @@ export default function Editor() {
           </div>
           <div className="flex min-w-0 flex-1 items-center justify-end gap-2">
             <button
-              onClick={() => setHumanizerOpen((open) => !open)}
+              onClick={() => setActiveHumanizerOpen((open) => !open)}
               className={`inline-flex h-8 items-center gap-1.5 rounded-sm border px-2.5 text-xs font-medium ${humanizerOpen ? "border-primary bg-primary/10 text-primary" : "border-border hover:bg-accent"}`}
               aria-pressed={humanizerOpen}
             >
@@ -702,10 +718,10 @@ export default function Editor() {
       {humanizerOpen ? (
         <Humanizer
           initialText={activeTab?.content ?? ""}
-          onClose={() => setHumanizerOpen(false)}
+          onClose={() => setActiveHumanizerOpen(false)}
           onReplace={(content) => {
             updateTab(activeTab.id, { content, isDirty: true });
-            setHumanizerOpen(false);
+            setActiveHumanizerOpen(false);
           }}
         />
       ) : (
