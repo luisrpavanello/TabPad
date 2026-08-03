@@ -6,12 +6,12 @@
  * OpenAPI spec version: 0.1.0
  */
 
-export type HumanizeRequestTone = typeof HumanizeRequestTone[keyof typeof HumanizeRequestTone];
-
+export type HumanizeRequestTone =
+  (typeof HumanizeRequestTone)[keyof typeof HumanizeRequestTone];
 
 export const HumanizeRequestTone = {
-  natural: 'natural',
-  professional: 'professional',
-  casual: 'casual',
-  academic: 'academic',
+  natural: "natural",
+  professional: "professional",
+  casual: "casual",
+  academic: "academic",
 } as const;

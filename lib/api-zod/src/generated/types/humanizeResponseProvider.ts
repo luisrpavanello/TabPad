@@ -6,11 +6,11 @@
  * OpenAPI spec version: 0.1.0
  */
 
-export type HumanizeResponseProvider = typeof HumanizeResponseProvider[keyof typeof HumanizeResponseProvider];
-
+export type HumanizeResponseProvider =
+  (typeof HumanizeResponseProvider)[keyof typeof HumanizeResponseProvider];
 
 export const HumanizeResponseProvider = {
-  gemini: 'gemini',
-  groq: 'groq',
-  ollama: 'ollama',
+  gemini: "gemini",
+  groq: "groq",
+  ollama: "ollama",
 } as const;

@@ -77,6 +77,18 @@ components:
           maximum: 3
         preserveMarkdown:
           type: boolean
+        context:
+          type: string
+          maxLength: 500
+        audience:
+          type: string
+          maxLength: 500
+        intention:
+          type: string
+          maxLength: 500
+        voiceSample:
+          type: string
+          maxLength: 3000
       required: [text, tone, intensity, preserveMarkdown]
     HumanizeUsage:
       type: object

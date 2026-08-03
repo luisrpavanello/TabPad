@@ -5,8 +5,8 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
-import type { HumanizeResponseProvider } from './humanizeResponseProvider';
-import type { HumanizeUsage } from './humanizeUsage';
+import type { HumanizeResponseProvider } from "./humanizeResponseProvider";
+import type { HumanizeUsage } from "./humanizeUsage";
 
 export interface HumanizeResponse {
   result: string;

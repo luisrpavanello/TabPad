@@ -43,6 +43,15 @@ const copy: Record<
     error: string;
     cloud: string;
     processing: string;
+    personalize: string;
+    context: string;
+    contextPlaceholder: string;
+    audience: string;
+    audiencePlaceholder: string;
+    intention: string;
+    intentionPlaceholder: string;
+    voiceSample: string;
+    voiceSamplePlaceholder: string;
   }
 > = {
   en: {
@@ -78,6 +87,16 @@ const copy: Record<
     error: "Unable to humanize the text. Please try again.",
     cloud: "In the cloud",
     processing: "Processing",
+    personalize: "Personalize the writing",
+    context: "Context",
+    contextPlaceholder: "Where will this text be used?",
+    audience: "Audience",
+    audiencePlaceholder: "Who will read it?",
+    intention: "Intention",
+    intentionPlaceholder: "What should the reader understand or feel?",
+    voiceSample: "My voice (optional sample)",
+    voiceSamplePlaceholder:
+      "Paste a short passage genuinely written by you. The result will follow its rhythm and vocabulary.",
   },
   pt: {
     title: "Humanizador com IA",
@@ -112,6 +131,16 @@ const copy: Record<
     error: "Não foi possível humanizar o texto. Tente novamente.",
     cloud: "Na nuvem",
     processing: "Processamento",
+    personalize: "Personalizar a escrita",
+    context: "Contexto",
+    contextPlaceholder: "Onde este texto será usado?",
+    audience: "Público",
+    audiencePlaceholder: "Quem vai ler?",
+    intention: "Intenção",
+    intentionPlaceholder: "O que o leitor deve entender ou sentir?",
+    voiceSample: "Minha voz (amostra opcional)",
+    voiceSamplePlaceholder:
+      "Cole um trecho curto realmente escrito por você. O resultado seguirá seu ritmo e vocabulário.",
   },
   es: {
     title: "Humanizador con IA",
@@ -147,6 +176,16 @@ const copy: Record<
     error: "No se pudo humanizar el texto. Inténtalo de nuevo.",
     cloud: "En la nube",
     processing: "Procesamiento",
+    personalize: "Personalizar la escritura",
+    context: "Contexto",
+    contextPlaceholder: "¿Dónde se utilizará este texto?",
+    audience: "Público",
+    audiencePlaceholder: "¿Quién lo leerá?",
+    intention: "Intención",
+    intentionPlaceholder: "¿Qué debería entender o sentir el lector?",
+    voiceSample: "Mi voz (muestra opcional)",
+    voiceSamplePlaceholder:
+      "Pega un fragmento corto escrito realmente por ti. El resultado seguirá su ritmo y vocabulario.",
   },
 };
 
@@ -170,6 +209,10 @@ export function Humanizer({
   const [tone, setTone] = useState<Tone>("natural");
   const [intensity, setIntensity] = useState(2);
   const [preserveMarkdown, setPreserveMarkdown] = useState(true);
+  const [context, setContext] = useState("");
+  const [audience, setAudience] = useState("");
+  const [intention, setIntention] = useState("");
+  const [voiceSample, setVoiceSample] = useState("");
   const [usage, setUsage] = useState<Usage | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -189,7 +232,16 @@ export function Humanizer({
     const response = await fetch(`${apiBaseUrl}/api/humanize`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text: clean, tone, intensity, preserveMarkdown }),
+      body: JSON.stringify({
+        text: clean,
+        tone,
+        intensity,
+        preserveMarkdown,
+        context: context.trim() || undefined,
+        audience: audience.trim() || undefined,
+        intention: intention.trim() || undefined,
+        voiceSample: voiceSample.trim() || undefined,
+      }),
     });
     const data = (await response.json().catch(() => null)) as {
       result?: unknown;
@@ -316,6 +368,55 @@ export function Humanizer({
           {loading ? t.humanizing : t.humanize}
         </button>
       </div>
+
+      <details className="border-b bg-muted/10 px-4 py-2">
+        <summary className="cursor-pointer select-none text-xs font-medium text-primary">
+          {t.personalize}
+        </summary>
+        <div className="mt-3 grid gap-3 md:grid-cols-3">
+          <label className="grid gap-1 text-xs font-medium">
+            {t.context}
+            <input
+              value={context}
+              onChange={(event) => setContext(event.target.value)}
+              maxLength={500}
+              placeholder={t.contextPlaceholder}
+              className="h-9 rounded-sm border bg-background px-3 text-sm font-normal"
+            />
+          </label>
+          <label className="grid gap-1 text-xs font-medium">
+            {t.audience}
+            <input
+              value={audience}
+              onChange={(event) => setAudience(event.target.value)}
+              maxLength={500}
+              placeholder={t.audiencePlaceholder}
+              className="h-9 rounded-sm border bg-background px-3 text-sm font-normal"
+            />
+          </label>
+          <label className="grid gap-1 text-xs font-medium">
+            {t.intention}
+            <input
+              value={intention}
+              onChange={(event) => setIntention(event.target.value)}
+              maxLength={500}
+              placeholder={t.intentionPlaceholder}
+              className="h-9 rounded-sm border bg-background px-3 text-sm font-normal"
+            />
+          </label>
+          <label className="grid gap-1 text-xs font-medium md:col-span-3">
+            {t.voiceSample}
+            <textarea
+              value={voiceSample}
+              onChange={(event) => setVoiceSample(event.target.value)}
+              maxLength={3_000}
+              rows={3}
+              placeholder={t.voiceSamplePlaceholder}
+              className="resize-y rounded-sm border bg-background px-3 py-2 text-sm font-normal leading-relaxed"
+            />
+          </label>
+        </div>
+      </details>
 
       {error && (
         <div

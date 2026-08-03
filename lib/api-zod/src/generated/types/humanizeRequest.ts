@@ -5,19 +5,27 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
-import type { HumanizeRequestTone } from './humanizeRequestTone';
+import type { HumanizeRequestTone } from "./humanizeRequestTone";
 
 export interface HumanizeRequest {
   /**
-     * @minLength 1
-     * @maxLength 12000
-     */
+   * @minLength 1
+   * @maxLength 12000
+   */
   text: string;
   tone: HumanizeRequestTone;
   /**
-     * @minimum 1
-     * @maximum 3
-     */
+   * @minimum 1
+   * @maximum 3
+   */
   intensity: number;
   preserveMarkdown: boolean;
+  /** @maxLength 500 */
+  context?: string;
+  /** @maxLength 500 */
+  audience?: string;
+  /** @maxLength 500 */
+  intention?: string;
+  /** @maxLength 3000 */
+  voiceSample?: string;
 }

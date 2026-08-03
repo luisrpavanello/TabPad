@@ -9,29 +9,37 @@ export interface HealthStatus {
   status: string;
 }
 
-export type HumanizeRequestTone = typeof HumanizeRequestTone[keyof typeof HumanizeRequestTone];
-
+export type HumanizeRequestTone =
+  (typeof HumanizeRequestTone)[keyof typeof HumanizeRequestTone];
 
 export const HumanizeRequestTone = {
-  natural: 'natural',
-  professional: 'professional',
-  casual: 'casual',
-  academic: 'academic',
+  natural: "natural",
+  professional: "professional",
+  casual: "casual",
+  academic: "academic",
 } as const;
 
 export interface HumanizeRequest {
   /**
-     * @minLength 1
-     * @maxLength 12000
-     */
+   * @minLength 1
+   * @maxLength 12000
+   */
   text: string;
   tone: HumanizeRequestTone;
   /**
-     * @minimum 1
-     * @maximum 3
-     */
+   * @minimum 1
+   * @maximum 3
+   */
   intensity: number;
   preserveMarkdown: boolean;
+  /** @maxLength 500 */
+  context?: string;
+  /** @maxLength 500 */
+  audience?: string;
+  /** @maxLength 500 */
+  intention?: string;
+  /** @maxLength 3000 */
+  voiceSample?: string;
 }
 
 export interface HumanizeUsage {
@@ -40,13 +48,13 @@ export interface HumanizeUsage {
   totalTokens: number;
 }
 
-export type HumanizeResponseProvider = typeof HumanizeResponseProvider[keyof typeof HumanizeResponseProvider];
-
+export type HumanizeResponseProvider =
+  (typeof HumanizeResponseProvider)[keyof typeof HumanizeResponseProvider];
 
 export const HumanizeResponseProvider = {
-  gemini: 'gemini',
-  groq: 'groq',
-  ollama: 'ollama',
+  gemini: "gemini",
+  groq: "groq",
+  ollama: "ollama",
 } as const;
 
 export interface HumanizeResponse {

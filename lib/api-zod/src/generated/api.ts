@@ -5,16 +5,15 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
-import * as zod from 'zod';
-
+import * as zod from "zod";
 
 /**
  * Returns server health status
  * @summary Health check
  */
 export const HealthCheckResponse = zod.object({
-  "status": zod.string()
-})
+  status: zod.string(),
+});
 
 /**
  * @summary Humanize text with AI
@@ -23,21 +22,31 @@ export const humanizeTextBodyTextMax = 12000;
 
 export const humanizeTextBodyIntensityMax = 3;
 
+export const humanizeTextBodyContextMax = 500;
 
+export const humanizeTextBodyAudienceMax = 500;
+
+export const humanizeTextBodyIntentionMax = 500;
+
+export const humanizeTextBodyVoiceSampleMax = 3000;
 
 export const HumanizeTextBody = zod.object({
-  "text": zod.string().min(1).max(humanizeTextBodyTextMax),
-  "tone": zod.enum(['natural', 'professional', 'casual', 'academic']),
-  "intensity": zod.number().min(1).max(humanizeTextBodyIntensityMax),
-  "preserveMarkdown": zod.boolean()
-})
+  text: zod.string().min(1).max(humanizeTextBodyTextMax),
+  tone: zod.enum(["natural", "professional", "casual", "academic"]),
+  intensity: zod.number().min(1).max(humanizeTextBodyIntensityMax),
+  preserveMarkdown: zod.boolean(),
+  context: zod.string().max(humanizeTextBodyContextMax).optional(),
+  audience: zod.string().max(humanizeTextBodyAudienceMax).optional(),
+  intention: zod.string().max(humanizeTextBodyIntentionMax).optional(),
+  voiceSample: zod.string().max(humanizeTextBodyVoiceSampleMax).optional(),
+});
 
 export const HumanizeTextResponse = zod.object({
-  "result": zod.string(),
-  "usage": zod.object({
-  "inputTokens": zod.number(),
-  "outputTokens": zod.number(),
-  "totalTokens": zod.number()
-}),
-  "provider": zod.enum(['gemini', 'groq', 'ollama'])
-})
+  result: zod.string(),
+  usage: zod.object({
+    inputTokens: zod.number(),
+    outputTokens: zod.number(),
+    totalTokens: zod.number(),
+  }),
+  provider: zod.enum(["gemini", "groq", "ollama"]),
+});
