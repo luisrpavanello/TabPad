@@ -217,7 +217,6 @@ export function Humanizer({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);
-  const [provider, setProvider] = useState<string | null>(null);
 
   useEffect(() => setSource(initialText), [initialText]);
   const stats = useMemo(
@@ -247,13 +246,11 @@ export function Humanizer({
       result?: unknown;
       usage?: unknown;
       error?: unknown;
-      provider?: unknown;
     } | null;
     if (!response.ok || typeof data?.result !== "string")
       throw new Error(typeof data?.error === "string" ? data.error : t.error);
     if (data.usage && typeof data.usage === "object")
       setUsage(data.usage as Usage);
-    if (typeof data.provider === "string") setProvider(data.provider);
     return data.result;
   };
 
@@ -271,7 +268,6 @@ export function Humanizer({
     setError("");
     setUsage(null);
     setCopied(false);
-    setProvider(null);
     try {
       setResult(await humanizeCloud(clean));
     } catch (cause) {
@@ -317,7 +313,7 @@ export function Humanizer({
           <span>{t.processing}</span>
           <div className="flex h-9 items-center gap-1.5 rounded-sm border bg-background px-3 text-xs text-muted-foreground">
             <Cloud size={14} className="text-primary" />
-            {t.cloud} · Gemini / Groq
+            {t.cloud}
           </div>
         </div>
         <label className="grid gap-1 text-xs font-medium">
@@ -459,14 +455,12 @@ export function Humanizer({
       </div>
 
       <div className="flex flex-wrap items-center gap-2 border-t bg-muted/30 px-4 py-3">
-        {(usage || provider) && (
+        {usage && (
           <p className="mr-auto text-xs text-muted-foreground">
-            {provider && `${provider} · `}
-            {usage &&
-              `${t.usage}: ${usage.inputTokens} ${t.input} · ${usage.outputTokens} ${t.output} · ${usage.totalTokens} ${t.total}`}
+            {`${t.usage}: ${usage.inputTokens} ${t.input} · ${usage.outputTokens} ${t.output} · ${usage.totalTokens} ${t.total}`}
           </p>
         )}
-        {!usage && !provider && <span className="mr-auto" />}
+        {!usage && <span className="mr-auto" />}
         <button
           onClick={() => void copyResult()}
           disabled={!result}
