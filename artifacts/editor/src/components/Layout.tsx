@@ -69,7 +69,7 @@ function LayoutContent({
               alt=""
               width="32"
               height="32"
-              className="h-7 w-7 rounded-md"
+              className="h-8 w-8 rounded-md"
               aria-hidden="true"
             />
             <span className="font-bold text-lg text-primary">TabPad</span>
