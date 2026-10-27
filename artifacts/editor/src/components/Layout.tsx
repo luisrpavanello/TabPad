@@ -65,10 +65,10 @@ function LayoutContent({
             className="flex items-center space-x-2"
           >
             <img
-              src="/favicon.svg"
+              src="/tabpad-logo.png"
               alt=""
-              width="28"
-              height="28"
+              width="32"
+              height="32"
               className="h-7 w-7 rounded-md"
               aria-hidden="true"
             />
